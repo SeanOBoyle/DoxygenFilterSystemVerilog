@@ -29,7 +29,9 @@
 #               (template) than can be altered slightly with project (delta).
 #
 # Usage:
-#               idv_doxyfile_tmplconv.pl --template Doxyfile.template \
+#               idv_doxyfile_tmplconv.pl --path_doxyscr "../../../Doxygen" \
+#                                        --path_prj "../../../project" \
+#                                        --template Doxyfile.template \
 #                                        --delta Doxyfile.delta \
 #                                        --output Doxyfile.output
 #
@@ -61,11 +63,14 @@ use strict;
 use Getopt::Long;
 
 # Get command line options
-#  Template File Path
+my $path_doxyscr = '';
+my $path_prj = '';
 my $template_file = '';
 my $delta_file = '';
 my $output_file = '';
-GetOptions ('template=s' => \$template_file,
+GetOptions ('path_doxyscr=s' => \$path_doxyscr,
+            'path_prj=s' => \$path_prj,
+            'template=s' => \$template_file,
             'delta=s' => \$delta_file,
             'output=s' => \$output_file);
 
@@ -80,6 +85,10 @@ close(DELTA);
 # Create a Hash of Keys with values for everything that matches the ^KEY = VALUE \n pattern
 my %delta_hash = ();
 foreach (@delta_file_arr) {
+   # Replace <PATH_*> with $path_* string
+   s/<PATH_PRJ>/$path_prj/g;
+   s/<PATH_DOXYSCR>/$path_doxyscr/g;
+   # Search for key=value pattern; capture key/value into hash
    if (/^(\w+)(\s*)=(\s*)(.*)$/) {
       #print "got one! $1 = $4\n";
       $delta_hash{$1} = $4;

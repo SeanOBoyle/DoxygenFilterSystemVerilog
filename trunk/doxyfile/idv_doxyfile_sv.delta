@@ -38,7 +38,7 @@
 #-----------------------------------------------------------------------------
 FILE_PATTERNS          = *.svh *.sv *.cpp *.c *.h
 EXAMPLE_PATTERNS       = *.sv, *.svh
-FILTER_PATTERNS        = *.sv=../../Doxygen/tags/1.0.0/filter/idv_doxyfilter_sv.pl *.svh=../../Doxygen/tags/1.0.0/filter/idv_doxyfilter_sv.pl
+FILTER_PATTERNS        = *.sv=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl *.svh=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl
 JAVADOC_AUTOBRIEF      = YES
 TAB_SIZE               = 3
 EXTRACT_ALL            = YES
