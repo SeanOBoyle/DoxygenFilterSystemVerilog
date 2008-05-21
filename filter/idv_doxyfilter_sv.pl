@@ -81,6 +81,27 @@ foreach (@infile) {
    # Deal with Comments
    #
    #-----------------------------------------------------------------------------
+   # Detect Single Line Comments
+   #  Looking for:
+   #   ... // comment
+   #   or
+   #   ... /// doxygen comment
+   #   or
+   #   ... /* comment */
+   # Current Strategy:
+   #   - skip all commented lines
+   #   - Don't want to filter the comment so we remove the comment
+   #   - BUT - we want to save the comment if it was a doxygen comment
+   #           so we'll put back the comment at the end
+   if (/(\/\/.*)/) {
+      $inline_comment = $1;
+      s/\/\/.*//;  # strip comment off of the line
+   }
+   elsif (/(\/\*.*\*\/)/) {
+      $inline_comment = $1;
+      s/\/\*.*\*\///;  # strip comment off of the line
+   }
+
    # Block Comment Start
    #  Looking for:
    #   /*
@@ -144,21 +165,6 @@ foreach (@infile) {
       next;  # skip to next line of file
    }
 
-   # Detect Single Line Comments
-   #  Looking for:
-   #   ... // comment
-   #   or
-   #   ... /// doxygen comment
-   # Current Strategy:
-   #   - skip all commented lines
-   #   - Don't want to filter the comment so we remove the comment
-   #   - BUT - we want to save the comment if it was a doxygen comment
-   #           so we'll put back the comment at the end
-   if (/(\/\/.*)/) {
-      $inline_comment = $1;
-      s/\/\/.*//;  # strip comment off of the line
-   }
-
    #-----------------------------------------------------------------------------
    #
    # Deal with Macros
@@ -169,10 +175,11 @@ foreach (@infile) {
    #   Anything that starts with a backtick (`)
    # Current Strategy:
    #   - replace the backtick with a pound sign (#) for defined C++ macros
-   #   - double tick (``) is replaced with nothing - C++ macros don't use ``; just the name
+   #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
-   #   - print the line as is; don't try to continue filtering the line
+#   #   - print the line as is; don't try to continue filtering the line
    if (/`/) {
+      s/`_protected/protected/; #HACK - `define for _protected is protected
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       #s/^(\s*)`(\w+)(\s*)(\(.*\)\s*$)/\n/; # macro calls that stand alone should be deleted
@@ -185,8 +192,8 @@ foreach (@infile) {
          s/$/ $inline_comment/;
          $inline_comment = "";
       }
-      print;
-      next;  # skip to next line of file
+#      print;
+#      next;  # skip to next line of file
    }
 
    # Multiline Preprocessor Macros
@@ -340,7 +347,8 @@ foreach (@infile) {
    # ... typename'(value or equation) ...
    # Current Strategy:
    #   - make it look like a C++ static cast: typename(value or equation) by removing the tick
-   s/(.+)'\((.+)\)/$1($2)/;
+   s/(.+)\s*'\s*\((.+)\)/$1($2)/;
+   s/(.+)\s*'\s*\{(.+)\}/$1($2)/;
 
    # DPI Imports
    # A DPI Import is just another method available at the scope where the import occured
@@ -621,6 +629,27 @@ foreach (@infile) {
    s/\bendclocking\b/}/;
    s/\bendgroup\b/}/;
    s/\bend\b/}/;
+
+   # Literals with X or Z
+   # Looking for:
+   # ... 5'h.X..
+   # ... 5'b.Z..
+   # ... 5'd.z..
+   # Current Strategy:
+   #   - no strategy
+   #   - TODO: if we encounter an issue - put the fix here
+
+   # Sized Literals
+   # Looking for:
+   # ... 5'h...
+   # ... 5'b...
+   # ... 5'd...
+   # Current Strategy:
+   #   - change to 0x, 0b, 0d
+   s/\d+\s*'[h|H]/0x/;
+   s/\d+\s*'[d|D]/0d/;
+   s/\d+\s*'[b|B]/0b/;
+   s/\d+\s*'[o|O]/0o/;
 
    # Function
    # C++ function looks exactly like SV function except C++ doesn't have the word "function"
