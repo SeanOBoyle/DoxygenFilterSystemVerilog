@@ -167,6 +167,61 @@ foreach (@infile) {
 
    #-----------------------------------------------------------------------------
    #
+   # Deal with Symbols that Break Doxygen Parsing
+   #   -- tickmarks need to be closed in doxygen - so get rid of all SV unclosed tickmarks
+   #
+   #-----------------------------------------------------------------------------
+   # Literals with X or Z
+   # Looking for:
+   # ... 5'h.X..
+   # ... 5'b.Z..
+   # ... 5'd.z..
+   # Current Strategy:
+   #   - no strategy
+   #   - TODO: if we encounter an issue - put the fix here
+
+   # Sized Literals
+   # Looking for:
+   # ... 5'h...
+   # ... 5'b...
+   # ... 5'd...
+   # Current Strategy:
+   #   - change to 0x, 0b, 0d
+   s/\d+\s*'[h|H]/0x/;
+   s/\d+\s*'[d|D]/0d/;
+   s/\d+\s*'[b|B]/0b/;
+   s/\d+\s*'[o|O]/0o/;
+
+   # UnSized Literals
+   # Looking for:
+   # ... 'h...
+   # ... 'b...
+   # ... 'd...
+   # Current Strategy:
+   #   - change to 0x, 0b, 0d
+   s/'[h|H]/0x/;
+   s/'[d|D]/0d/;
+   s/'[b|B]/0b/;
+   s/'[o|O]/0o/;
+
+   # Static Casting
+   # SV static cast uses a tick (') where C++ foregoes the tick
+   # Looking for:
+   # ... typename'(value or equation) ...
+   # Current Strategy:
+   #   - make it look like a C++ static cast: typename(value or equation) by removing the tick
+   s/(.+)\s*'\s*\((.+)\)/$1($2)/;
+   s/(.+)\s*'\s*\{(.+)\}/$1($2)/;
+
+   # Remaining Tickmarks
+   # Looking for:
+   #  ...'...
+   # Current Strategy:
+   #    - get rid of any tickmarks that remain (after the above more accurate conversions)
+   s/'//g;
+
+   #-----------------------------------------------------------------------------
+   #
    # Deal with Macros
    #
    #-----------------------------------------------------------------------------
@@ -177,9 +232,9 @@ foreach (@infile) {
    #   - replace the backtick with a pound sign (#) for defined C++ macros
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
-#   #   - print the line as is; don't try to continue filtering the line
+   #   - print the line as is; don't try to continue filtering the line
    if (/`/) {
-      s/`_protected/protected/; #HACK - `define for _protected is protected
+      s/`_protected/protected/; #HACK - in OVM `define for _protected is protected
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       #s/^(\s*)`(\w+)(\s*)(\(.*\)\s*$)/\n/; # macro calls that stand alone should be deleted
@@ -192,8 +247,8 @@ foreach (@infile) {
          s/$/ $inline_comment/;
          $inline_comment = "";
       }
-#      print;
-#      next;  # skip to next line of file
+      print;
+      next;  # skip to next line of file
    }
 
    # Multiline Preprocessor Macros
@@ -274,6 +329,15 @@ foreach (@infile) {
       next;  # skip to next line of file
    }
 
+   # Program Block
+   #   SV Program Block
+   # Looking for:
+   # ... program
+   # Current Strategy:
+   #   - make look like C++ function
+   # TODO; make program blocks look like C++ functions
+
+
    # Logic Types with defined widths
    # Looking for:
    #  logic [10:4] foo ...
@@ -341,15 +405,6 @@ foreach (@infile) {
    # Deal with Stuff that C++ Does Have -- convert the syntax from SV to C++
    #
    #-----------------------------------------------------------------------------
-   # Static Casting
-   # SV static cast uses a tick (') where C++ foregoes the tick
-   # Looking for:
-   # ... typename'(value or equation) ...
-   # Current Strategy:
-   #   - make it look like a C++ static cast: typename(value or equation) by removing the tick
-   s/(.+)\s*'\s*\((.+)\)/$1($2)/;
-   s/(.+)\s*'\s*\{(.+)\}/$1($2)/;
-
    # DPI Imports
    # A DPI Import is just another method available at the scope where the import occured
    # Looking for:
@@ -379,11 +434,9 @@ foreach (@infile) {
    # Case Statement
    # SV case looks exactly like C++ case except that C++ case opens with {
    # SV also has special types of case not in C++ (casez, casex)
-   # Except that C++ enums are always of type int
-   #   SV: [optional type with optional bit width] enum {...} enumname
-   #  C++: enum {...} enumname
    # Current Strategy:
-   #   - get rid of any optional type information
+   #   - change casex and casez to case
+   #   - open case like C++
    s/\bcasez\b/case/;
    s/\bcasex\b/case/;
    if (/\bcase\b/) {
@@ -397,7 +450,12 @@ foreach (@infile) {
    #  C++: enum {...} enumname
    # Current Strategy:
    #   - get rid of any optional type information
-   s/enum.*?{/typedef enum {/;
+   if (/typedef enum/) {
+   s/enum.*?{/enum {/;
+   }
+   else {
+      s/enum.*?{/typedef enum {/;
+   }
 
    # Class
    # A C++ class looks exactly like an SV class with these exceptions:
@@ -612,6 +670,7 @@ foreach (@infile) {
    s/\bendprogram\s*:\s*\S+/}/;
    s/\bendcase\s*:\s*\S+/}/;
    s/\bendfunction\s*:\s*\S+/}/;
+   s/\bendtask\s*:\s*\S+/}/;
    s/\bendclocking\s*:\s*\S+/}/;
    s/\bendgroup\s*:\s*\S+/}/;
    s/\bend\s*:\s*\S+/}/;
@@ -629,27 +688,6 @@ foreach (@infile) {
    s/\bendclocking\b/}/;
    s/\bendgroup\b/}/;
    s/\bend\b/}/;
-
-   # Literals with X or Z
-   # Looking for:
-   # ... 5'h.X..
-   # ... 5'b.Z..
-   # ... 5'd.z..
-   # Current Strategy:
-   #   - no strategy
-   #   - TODO: if we encounter an issue - put the fix here
-
-   # Sized Literals
-   # Looking for:
-   # ... 5'h...
-   # ... 5'b...
-   # ... 5'd...
-   # Current Strategy:
-   #   - change to 0x, 0b, 0d
-   s/\d+\s*'[h|H]/0x/;
-   s/\d+\s*'[d|D]/0d/;
-   s/\d+\s*'[b|B]/0b/;
-   s/\d+\s*'[o|O]/0o/;
 
    # Function
    # C++ function looks exactly like SV function except C++ doesn't have the word "function"
