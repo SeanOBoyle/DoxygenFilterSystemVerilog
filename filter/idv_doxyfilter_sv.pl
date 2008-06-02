@@ -24,7 +24,12 @@
 #               This script was generated heuristically - so there will likely
 #               be new issues discovered.
 #
-# Note:         Search for TODO and HACK notations in-line
+# NOTE:         Search for TODO and HACK notations in-line
+# NOTE:         Preprocessor Macros are a PITA! Doxygen does the replace for me - 
+#               and there are a number of instances where an SV pattern to CPP pattern
+#               would work fine IF the preprocessor ran *before* the filter. Sooo...
+#               TODO: integrate SV preprocessor that does the `DEFINE replaces in 
+#                     this filter.
 #
 # Original Author: Sean O'Boyle
 # Contact:         seanoboyle@intelligentdv.com)
@@ -53,6 +58,9 @@ my $inline_comment = "";
 my $covergroup = 0;
 my $covergroup_name = "";
 my $constraint = 0;
+my $program_start = 0;
+my $module_start = 0;
+my $interface_start = 0;
 my $stringconcat = 0;
 my $onelinestringconcat = "";
 my $class = 0;
@@ -69,7 +77,7 @@ my $isextern = 0;
 
 #print STDERR "!!!!!!!!!!!!!Starting Filter!!!!!!!!!!!!!!!!\n";
 
-my @infile = <>;
+my @infile = <>;  # slurp from STDIN
 my $infile_line = 0;
 # Process the SV File Line-by-Line
 foreach (@infile) {
@@ -81,27 +89,6 @@ foreach (@infile) {
    # Deal with Comments
    #
    #-----------------------------------------------------------------------------
-   # Detect Single Line Comments
-   #  Looking for:
-   #   ... // comment
-   #   or
-   #   ... /// doxygen comment
-   #   or
-   #   ... /* comment */
-   # Current Strategy:
-   #   - skip all commented lines
-   #   - Don't want to filter the comment so we remove the comment
-   #   - BUT - we want to save the comment if it was a doxygen comment
-   #           so we'll put back the comment at the end
-   if (/(\/\/.*)/) {
-      $inline_comment = $1;
-      s/\/\/.*//;  # strip comment off of the line
-   }
-   elsif (/(\/\*.*\*\/)/) {
-      $inline_comment = $1;
-      s/\/\*.*\*\///;  # strip comment off of the line
-   }
-
    # Block Comment Start
    #  Looking for:
    #   /*
@@ -164,6 +151,28 @@ foreach (@infile) {
       print; # print the comment as is
       next;  # skip to next line of file
    }
+
+   # Detect Single Line Comments
+   #  Looking for:
+   #   ... // comment
+   #   or
+   #   ... /// doxygen comment
+   #   or
+   #   ... /* comment */
+   # Current Strategy:
+   #   - skip all commented lines
+   #   - Don't want to filter the comment so we remove the comment
+   #   - BUT - we want to save the comment if it was a doxygen comment
+   #           so we'll put back the comment at the end
+   if (/(\/\/.*)/) {
+      $inline_comment = $1;
+      s/\/\/.*//;  # strip comment off of the line
+   }
+   elsif (/(\/\*.*\*\/)/) {
+      $inline_comment = $1;
+      s/\/\*.*\*\///;  # strip comment off of the line
+   }
+
 
    #-----------------------------------------------------------------------------
    #
@@ -233,8 +242,14 @@ foreach (@infile) {
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
    #   - print the line as is; don't try to continue filtering the line
-   if (/`/) {
-      s/`_protected/protected/; #HACK - in OVM `define for _protected is protected
+   if (/^\s*`/) {
+      s/`_protected/protected/; # HACK - in OVM `define for _protected is protected
+      # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
+      if (s/`VMM_HW_RTL_COMPONENT_START\s+?(\w+?)\s*\((.*?)\)\s*;/VMM_HW_RTL_COMPONENT_START $1($2) {/) {} 
+      elsif (/`VMM_HW_RTL_COMPONENT_START\s+?(\w+?)\s*\(/) { 
+         $interface_start = 1;
+      }
+      s/`VMM_HW_RTL_COMPONENT_END\b/}/; # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       #s/^(\s*)`(\w+)(\s*)(\(.*\)\s*$)/\n/; # macro calls that stand alone should be deleted
@@ -250,6 +265,13 @@ foreach (@infile) {
       print;
       next;  # skip to next line of file
    }
+   
+   # Remaining BackTickmarks
+   # Looking for:
+   #  ...`...
+   # Current Strategy:
+   #    - get rid of any backtickmarks that remain (after the above more accurate conversions)
+   s/`//g;
 
    # Multiline Preprocessor Macros
    # Assuming that the only use of line continuation marker is for multiline preprocessor macros
@@ -286,7 +308,7 @@ foreach (@infile) {
    # TODO: if covergroup is defined as extern then we're hosed here
    # TODO: if covergroup is defined in one line then we're hosed here
    # TODO: if the covergroup has a trigger (@) then this may break
-   # TODO: may want to make these look like methods (?)
+   # TODO: may want to make these look like methods instead of variables (?)
    if (/\bcovergroup\b/) {
       print;  # print covergroup line
       $covergroup = 1;
@@ -322,7 +344,13 @@ foreach (@infile) {
    }
    # replace covergroup lines with empty lines
    if ($constraint) {
+      if (/\{/) {
+         $constraint++;
+      }
       if (/\}/) {
+         $constraint--;
+      }
+      if ($constraint < 0) {
          $constraint = 0;
       }
       print "\n";  # print empty line
@@ -332,10 +360,90 @@ foreach (@infile) {
    # Program Block
    #   SV Program Block
    # Looking for:
-   # ... program
+   # ... program foo;
+   # ... program foo(...);
    # Current Strategy:
-   #   - make look like C++ function
-   # TODO; make program blocks look like C++ functions
+   #   - make look like C++ function that returns type program
+#   # NOTE: only support programs declared in a single line; assuming that programs don't have any parameters
+#   s/\bprogram\s(\w)\s*\((.*?)\);/program $1($2) {/;
+#   s/\bprogram\s(\w);/program $1() {/;
+   if (/\bprogram\s+(\w)\s*/) {
+      $program_start = 1;
+      if (s/\bprogram\s+(\w+)\s*\((.*?)\)/program $1($2)/) {}
+      else {s/\bprogram\s+(\w+)/program $1(/;}
+   }
+   if ($program_start) {
+      if (s/\)\s*;/) {/) {
+         $program_start = 0;
+      }
+      elsif (s/;/) {/) {
+         $program_start = 0;
+      }
+   }
+
+   # Module Block
+   #   SV Module Block
+   # Looking for:
+   # ... module foo;
+   # ... module foo(...);
+   # Current Strategy:
+   #   - make look like C++ function that returns type module
+#   # NOTE: only support programs declared in a single line; assuming that programs don't have any parameters
+#   s/\bmodule\s+(\w+)\s*\((.*?)\);/module $1($2) {/;
+#   s/\bmodule\s+(\w+);/module $1() {/;
+   if (/\bmodule\s+(\w)\s*/) {
+      $module_start = 1;
+      if (s/\bmodule\s+(\w+)\s*\((.*?)\)/module $1($2)/) {}
+      else {s/\bmodule\s+(\w+)/module $1(/;}
+   }
+   if ($module_start) {
+      if (s/\)\s*;/) {/) {
+         $module_start = 0;
+      }
+      elsif (s/;/) {/) {
+         $module_start = 0;
+      }
+   }
+
+   
+   # Initial Block, Final Block
+   # Looking for:
+   # ... initial ...
+   # ... final ...
+   # Current Strategy:
+   # - remove keyword (initial is always followed by begin - begin is transformed to '{' so contents of initial block just look like new scope
+   s/\binitial\b//;
+   s/\bfinal\b//;
+   
+   # Virtual Interface Declaration
+   # Looking for:
+   # ... virtual interface foo ...
+   # Current Strategy:
+   #   - make look like C++ variable of type foo (remove string 'virtual interface'
+   s/\bvirtual\s+?interface//;
+
+   # Interface Block
+   #   SV Interface Block
+   # Looking for:
+   # ... interface foo;
+   # ... program foo(...);
+   # Current Strategy:
+   #   - make look like C++ function that returns type interface
+#   s/\binterface\s+(\w+)\s*\((.*?)\)\s*;/interface $1($2) {/;
+#   s/\binterface\s+(\w+)\s*;/interface $1() {/;
+   if (/\binterface\s+(\w+)\s*/) {
+      $interface_start = 1;
+      if (s/\binterface\s+(\w+)\s*\((.*?)\)/interface $1($2)/) {}
+      else {s/\binterface\s+(\w+)/interface $1()/;}
+   }
+   if ($interface_start) {
+      if (s/\)\s*;/) {/) {
+         $interface_start = 0;
+      }
+      elsif (s/;/) {/) {
+         $interface_start = 0;
+      }
+   }
 
 
    # Logic Types with defined widths
@@ -345,7 +453,7 @@ foreach (@infile) {
    #
    # Current Strategy:
    #   - Convert to a C++ template class instance
-   s/\b(logic|bit|wire|reg)\s*\[(.+):(.+)\]\s+/$1 <$2:$3>/;
+   s/\b(logic|bit|wire|reg)\s*\[(.+?):(.+?)\]\s+/$1 <$2:$3> /g;
 
    # Static Sized Arrays defined with ranges
    # Looking for:
@@ -412,7 +520,8 @@ foreach (@infile) {
    # Current Strategy:
    #   - make it look like a C++ function; remove the import "DPI.."
    if (/\bimport\b/) {
-      s/import\s+"DPI.*"//;
+      s/import\s+"DPI.*"\s+function(.*);/$1 {}/;
+      s/import\s+"DPI.*"\s+task(.*);/$1 {}/;
       print;
       next;  # skip to next line of file
    }
@@ -518,7 +627,7 @@ foreach (@infile) {
             s/\bextends\b/class $classname extends/;
          }
       }
-      if ($derived_class == 0) {
+      if ($template_class == 1 && $derived_class == 0) {
          s/ { public: / $classname { public: /;
       }
    }
@@ -526,6 +635,7 @@ foreach (@infile) {
    if (/\bendclass\b/) {
       $class_start = 0;
       $derived_class = 0;
+      $template_class = 0;
       $class = 0; # we're not in a class body
    }
 
@@ -539,12 +649,13 @@ foreach (@infile) {
       #print STDERR "Template Count = $template at line $infile_line\n";
    }
    if ($template) {
-   while (s/\)/>/g) {
-      if ($template == 0) {
-         next; #break
+      while (s/\)/>/g) {
+         if ($template == 0) {
+            next; #break
+         }
+         $template--;
       }
-      $template--;
-   }}
+   }
 
    # Class Access Specifier
    #   In C++ the access specifier defaults to private
@@ -665,9 +776,10 @@ foreach (@infile) {
    # ... end* : name ...
    # Current Strategy:
    #   - change end to close curly and remove the name
-
    s/\bendclass\s*:\s*\S+/};/;
    s/\bendprogram\s*:\s*\S+/}/;
+   s/\bendmodule\s*:\s*\S+/}/;
+   s/\bendinterface\s*:\s*\S+/}/;
    s/\bendcase\s*:\s*\S+/}/;
    s/\bendfunction\s*:\s*\S+/}/;
    s/\bendtask\s*:\s*\S+/}/;
@@ -682,6 +794,8 @@ foreach (@infile) {
    #   - change end to close curly
    s/\bendclass\b/};/;
    s/\bendprogram\b/}/;
+   s/\bendmodule\b/}/;
+   s/\bendinterface\b/}/;
    s/\bendcase\b/}/;
    s/\bendfunction\b/}/;
    s/\bendtask\b/}/;
