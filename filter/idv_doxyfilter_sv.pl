@@ -75,8 +75,6 @@ my $function_start = 0;
 my $ispure = 0;
 my $isextern = 0;
 
-#print STDERR "!!!!!!!!!!!!!Starting Filter!!!!!!!!!!!!!!!!\n";
-
 my @infile = <>;  # slurp from STDIN
 my $infile_line = 0;
 # Process the SV File Line-by-Line
@@ -89,6 +87,29 @@ foreach (@infile) {
    # Deal with Comments
    #
    #-----------------------------------------------------------------------------
+   # Detect Single Line Comments
+   #  Looking for:
+   #   ... // comment
+   #   or
+   #   ... /// doxygen comment
+   #   or
+   #   ... /* comment */
+   # Current Strategy:
+   #   - skip all commented lines
+   #   - Don't want to filter the comment so we remove the comment
+   #   - BUT - we want to save the comment if it was a doxygen comment
+   #           so we'll put back the comment at the end
+   if (!$blockcomment) {
+      if (/(\/\/.*)/) {
+         $inline_comment = $1;
+         s/\/\/.*//;  # strip comment off of the line
+      }
+      elsif (/(\/\*.*\*\/)/) {
+         $inline_comment = $1;
+         s/\/\*.*\*\///;  # strip comment off of the line
+      }
+   }
+
    # Block Comment Start
    #  Looking for:
    #   /*
@@ -151,28 +172,6 @@ foreach (@infile) {
       print; # print the comment as is
       next;  # skip to next line of file
    }
-
-   # Detect Single Line Comments
-   #  Looking for:
-   #   ... // comment
-   #   or
-   #   ... /// doxygen comment
-   #   or
-   #   ... /* comment */
-   # Current Strategy:
-   #   - skip all commented lines
-   #   - Don't want to filter the comment so we remove the comment
-   #   - BUT - we want to save the comment if it was a doxygen comment
-   #           so we'll put back the comment at the end
-   if (/(\/\/.*)/) {
-      $inline_comment = $1;
-      s/\/\/.*//;  # strip comment off of the line
-   }
-   elsif (/(\/\*.*\*\/)/) {
-      $inline_comment = $1;
-      s/\/\*.*\*\///;  # strip comment off of the line
-   }
-
 
    #-----------------------------------------------------------------------------
    #
@@ -242,14 +241,22 @@ foreach (@infile) {
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
    #   - print the line as is; don't try to continue filtering the line
+   
+   # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
+   s/`_protected/protected/; # HACK - in OVM `define for _protected is protected
+   
+   # HACK: teal/truss preprocessor macro: `PURE pure
+   s/`PURE/pure/;
+   
+   # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
+   s/`VMM_HW_RTL_COMPONENT_START\b/interface/;
+   # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
+   s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/; 
+   # HACK: vmm preprocessor macro: VMM_CONSENSUS vmm_consensus
+   s/`VMM_CONSENSUS\b/vmm_consensus/;
+
    if (/^\s*`/) {
-      s/`_protected/protected/; # HACK - in OVM `define for _protected is protected
-      # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
-      if (s/`VMM_HW_RTL_COMPONENT_START\s+?(\w+?)\s*\((.*?)\)\s*;/VMM_HW_RTL_COMPONENT_START $1($2) {/) {} 
-      elsif (/`VMM_HW_RTL_COMPONENT_START\s+?(\w+?)\s*\(/) { 
-         $interface_start = 1;
-      }
-      s/`VMM_HW_RTL_COMPONENT_END\b/}/; # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
+   
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       #s/^(\s*)`(\w+)(\s*)(\(.*\)\s*$)/\n/; # macro calls that stand alone should be deleted
@@ -433,7 +440,10 @@ foreach (@infile) {
 #   s/\binterface\s+(\w+)\s*;/interface $1() {/;
    if (/\binterface\s+(\w+)\s*/) {
       $interface_start = 1;
-      if (s/\binterface\s+(\w+)\s*\((.*?)\)/interface $1($2)/) {}
+      if (s/\binterface\s+(\w+)\s*?\((.*?)\)/interface $1($2)/) {}
+      elsif (/\binterface\s+?(\w+?)\s*\(/) {
+         $interface_start = 1;
+      }
       else {s/\binterface\s+(\w+)/interface $1()/;}
    }
    if ($interface_start) {
@@ -453,7 +463,7 @@ foreach (@infile) {
    #
    # Current Strategy:
    #   - Convert to a C++ template class instance
-   s/\b(logic|bit|wire|reg)\s*\[(.+?):(.+?)\]\s+/$1 <$2:$3> /g;
+   s/\b(logic|bit|wire|reg)\s*?\[(.+?):(.+?)\]\s*?/$1 <$2:$3> /g;
 
    # Static Sized Arrays defined with ranges
    # Looking for:
@@ -525,6 +535,14 @@ foreach (@infile) {
       print;
       next;  # skip to next line of file
    }
+   
+   # Pass by Reference
+   # 
+   # Looking for: ... ref foo ...
+   # Current Strategy:
+   #   - make it look like a C++ reference
+   # NOTE: this isn't really required -- doxygen can still parse with 'ref'
+   #s/\bref\s+(\w+)/$1&/;
 
    # Packages
    # An SV package is very similar to a C++ namespace; let's see if I can get this to work...
@@ -539,6 +557,9 @@ foreach (@infile) {
    #}
    #s/\bendpackage\b/}/;
    #s/\bimport\b(.*?)::(.*);/using namespace $2;/;
+   # HACK: since I'm ignoring packages everything is in the global namespace; so can't extend from a specific package
+   s/extends (\w+)::/extends /;
+   
 
    # Case Statement
    # SV case looks exactly like C++ case except that C++ case opens with {
