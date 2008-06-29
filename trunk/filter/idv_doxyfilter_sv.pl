@@ -25,6 +25,10 @@
 #               be new issues discovered.
 #
 # NOTE:         Search for TODO and HACK notations in-line
+# NOTE:         HACK items are typically due to either:
+#                   1) preprocessor macro used to define an SV keyword
+#                        (keywords need to be present in order for the filter to work)
+#                   2) strange (and arguably illegal) SV coding
 # NOTE:         Preprocessor Macros are a PITA! Doxygen does the replace for me - 
 #               and there are a number of instances where an SV pattern to CPP pattern
 #               would work fine IF the preprocessor ran *before* the filter. Sooo...
@@ -237,30 +241,29 @@ foreach (@infile) {
    # Looking for:
    #   Anything that starts with a backtick (`)
    # Current Strategy:
+   #   - HACK: hand replace any defines that are used to define SV keywords
    #   - replace the backtick with a pound sign (#) for defined C++ macros
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
    #   - print the line as is; don't try to continue filtering the line
-   
-   # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
-   s/`_protected/protected/; # HACK - in OVM `define for _protected is protected
-   
+
+   # HACK - in OVM `define for _protected is protected
+   s/`_protected/protected/;
    # HACK: teal/truss preprocessor macro: `PURE pure
    s/`PURE/pure/;
-   
    # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
    s/`VMM_HW_RTL_COMPONENT_START\b/interface/;
    # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
    s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/; 
    # HACK: vmm preprocessor macro: VMM_CONSENSUS vmm_consensus
    s/`VMM_CONSENSUS\b/vmm_consensus/;
+   # HACK: VMM_DATA_BASE_NEW_EXTERN_ARGS; VMM_DATA_NEW_ARGS; etc.
+   s/`VMM_.*?_ARGS//;
 
    if (/^\s*`/) {
    
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
-      #s/^(\s*)`(\w+)(\s*)(\(.*\)\s*$)/\n/; # macro calls that stand alone should be deleted
-      #s/`(\w+)(\s*)(\(.*$)/$1$2$3;/; # macro calls look like function calls
       s/`(\w)/$1/g;
       if (/\\\s*$/) {
          $multiline_macro = 1;
@@ -313,9 +316,9 @@ foreach (@infile) {
    #   - replace the remaining lines with empty lines (so that the code reference lines match)
    # Dealing with the contents of a covergroup is tough b/c of all of the curly braces
    # TODO: if covergroup is defined as extern then we're hosed here
-   # TODO: if covergroup is defined in one line then we're hosed here
+   # TODO: if covergroup is defined and implemented in one line then we're hosed here
    # TODO: if the covergroup has a trigger (@) then this may break
-   # TODO: may want to make these look like methods instead of variables (?)
+   # TODO: since a covergroup can take parameters we may want to make these look like methods that return type 'covergroup' instead of variables
    if (/\bcovergroup\b/) {
       print;  # print covergroup line
       $covergroup = 1;
@@ -338,9 +341,6 @@ foreach (@infile) {
    # Current Strategy:
    #   - Print the first line: it will be documented like a variable of type constraint
    #   - replace the remaining lines with empty lines (so that the code reference lines match)
-   # TODO: if constraint is defined as extern then we may be hosed here
-   # TODO: if constraint is defined in one line then we're hosed here
-   # TODO: may want to make these look like methods (?)
    if (/\bconstraint\b/) {
       if (/\{/) {
          s/\{/;/; # replace } with ; -- document like member variable
@@ -371,9 +371,6 @@ foreach (@infile) {
    # ... program foo(...);
    # Current Strategy:
    #   - make look like C++ function that returns type program
-#   # NOTE: only support programs declared in a single line; assuming that programs don't have any parameters
-#   s/\bprogram\s(\w)\s*\((.*?)\);/program $1($2) {/;
-#   s/\bprogram\s(\w);/program $1() {/;
    if (/\bprogram\s+(\w)\s*/) {
       $program_start = 1;
       if (s/\bprogram\s+(\w+)\s*\((.*?)\)/program $1($2)/) {}
@@ -395,9 +392,6 @@ foreach (@infile) {
    # ... module foo(...);
    # Current Strategy:
    #   - make look like C++ function that returns type module
-#   # NOTE: only support programs declared in a single line; assuming that programs don't have any parameters
-#   s/\bmodule\s+(\w+)\s*\((.*?)\);/module $1($2) {/;
-#   s/\bmodule\s+(\w+);/module $1() {/;
    if (/\bmodule\s+(\w)\s*/) {
       $module_start = 1;
       if (s/\bmodule\s+(\w+)\s*\((.*?)\)/module $1($2)/) {}
@@ -529,7 +523,7 @@ foreach (@infile) {
    #   - import "DPI.." function
    # Current Strategy:
    #   - make it look like a C++ function; remove the import "DPI.."
-   if (/\bimport\b/) {
+   if (/\bimport\s+"DPI/) {
       s/import\s+"DPI.*"\s+function(.*);/$1 {}/;
       s/import\s+"DPI.*"\s+task(.*);/$1 {}/;
       print;
@@ -552,11 +546,12 @@ foreach (@infile) {
    #   - make it look like a C++ namespace
    # TODO: uncomment this section once I can figure out how to get it working properly
    #       for now having everything in the global space looks better
-   #if (/\bpackage\b/) {
-   #   s/\bpackage\b(.*?);/namespace $1 {/;
-   #}
-   #s/\bendpackage\b/}/;
-   #s/\bimport\b(.*?)::(.*);/using namespace $2;/;
+#    if (/\bpackage\b/) {
+#       s/\bpackage\b(.*?);/namespace $1 {/;
+#    }
+#    s/\bendpackage\s*:\s*\S+/}/;
+#    s/\bendpackage\b/}/;
+#    s/\bimport\s+(\w+)::(.*)?;/using namespace $1;/;
    # HACK: since I'm ignoring packages everything is in the global namespace; so can't extend from a specific package
    s/extends (\w+)::/extends /;
    
