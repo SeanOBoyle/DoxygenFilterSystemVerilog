@@ -57,6 +57,7 @@ use strict;
 
 my $blockcomment = 0;
 my $doxyblockcomment = 0;
+my $str_back = "";
 my $multiline_macro = 0;
 my $inline_comment = "";
 my $covergroup = 0;
@@ -176,6 +177,20 @@ foreach (@infile) {
       print; # print the comment as is
       next;  # skip to next line of file
    }
+
+   # Detect and Skip Full Anything in a String
+   # Don't want to convert keywords that are in the body of a string
+   #  Looking for:
+   #   " ... "
+   # Current Strategy:
+   #   - delete anything inside of double quotes
+   if (s/"(.*)"/" "/) {
+      $str_back = $1;
+   }
+   else {
+      $str_back = "";
+   }
+
 
    #-----------------------------------------------------------------------------
    #
@@ -433,13 +448,7 @@ foreach (@infile) {
 #   s/\binterface\s+(\w+)\s*\((.*?)\)\s*;/interface $1($2) {/;
 #   s/\binterface\s+(\w+)\s*;/interface $1() {/;
    if (/\binterface\s+(\w+)\s*/) {
-      if (/".*interface/) {
-         $interface_start = 0; # interface keyword is in a string
-         # TODO: check for 'in a string' condition in separate section
-      }
-      else {
-         $interface_start = 1;
-      }
+      $interface_start = 1;
       if (s/\binterface\s+(\w+)\s*?\((.*?)\)/interface $1($2)/) {}
       elsif (/\binterface\s+?(\w+?)\s*\(/) {
          $interface_start = 1;
@@ -517,15 +526,6 @@ foreach (@infile) {
    # Current Strategy:
    #   - remove space between logic and [
    s/logic\s+\[/logic\[/;
-
-   # String Concatenation
-   # Looking for:
-   #   - { string, string }
-   # Current Strategy:
-   #   - replace all curly braces with parenthesies
-   # TODO: add if required
-#   s/{/\(/;
-#   s/}/\)/;
 
    #-----------------------------------------------------------------------------
    #
@@ -861,6 +861,16 @@ foreach (@infile) {
    # Current Strategy:
    #   - change extends keyword to public access specifier
    s/\bextends\b/: public/;
+
+   # Detect and Skip Full Anything in a String
+   # Don't want to convert keywords that are in the body of a string
+   #  Looking for:
+   #   " ... "
+   # Current Strategy:
+   #   - delete anything inside of double quotes
+   if ($str_back ne "") {
+      s/" "/"$str_back"/;
+   }
 
    # Return the Inline Comment to the End of the Line
    if ($inline_comment ne "") {
