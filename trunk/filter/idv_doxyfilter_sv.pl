@@ -605,6 +605,8 @@ foreach (@infile) {
    #   - convert SV class to C++ Class
    #   - convert SV Parameterized class to C++ template class
    #
+   s/\btype REQ=int,RSP=int/typename REQ=int, typename RSP=int/; # HACK: support for OVM weirdness
+
    if (/\bclass(\s+)(\w+)/) {
       $class_start = 1;
       $classname = $2;
@@ -621,7 +623,6 @@ foreach (@infile) {
       }
    }
    if ($class_start) {
-      s/\btype REQ=int,RSP=int/typename REQ=int, typename RSP=int/; # HACK: support for OVM weirdness
       s/\btype /typename /g;
       if (s/;/ { public: /) { # SV defaults to public; C++ defaults to private
          $class = 1; # we're in a class body
@@ -665,7 +666,7 @@ foreach (@infile) {
       #print STDERR "Template Count = $template at line $infile_line\n";
    }
    if ($template) {
-      while (s/\)/>/g) {
+      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here 
          if ($template == 0) {
             next; #break
          }
