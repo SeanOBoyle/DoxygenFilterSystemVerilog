@@ -40,7 +40,6 @@
 #               template or delta file.  (multiline == line with escaped \linefeed)
 # NOTE:         No error / warning is generated when a match is not found
 # TODO:         Add support for skipping commented (#) lines
-# TODO:         Add support for multiline value definition in either template or delta
 #
 # Original Author: Sean O'Boyle
 # Contact:         seanoboyle@intelligentdv.com)
@@ -84,14 +83,42 @@ close(DELTA);
 
 # Create a Hash of Keys with values for everything that matches the ^KEY = VALUE \n pattern
 my %delta_hash = ();
+my $cont_line = 0;
+my $cont_key = "";
 foreach (@delta_file_arr) {
    # Replace <PATH_*> with $path_* string
    s/<PATH_PRJ>/$path_prj/g;
    s/<PATH_DOXYSCR>/$path_doxyscr/g;
+
+   # Concatinate Escaped lines
+   if ($cont_line == 1) {
+      chomp;
+      #print "concatenating with key".$cont_key."!\n";
+      $delta_hash{$cont_key} = $delta_hash{$cont_key}."\n".$_;
+
+      # Escaped Line Continues
+      if (/\\\s*$/) {
+         $cont_line = 1;
+      }
+      else {
+         $cont_line = 0;
+      }
+   }
+
    # Search for key=value pattern; capture key/value into hash
-   if (/^(\w+)(\s*)=(\s*)(.*)$/) {
+   elsif (/^(\w+)(\s*)=(\s*)(.*)$/) {
       #print "got one! $1 = $4\n";
       $delta_hash{$1} = $4;
+      $cont_key = $1;
+      
+      # Escaped Line Continues
+      if (/\\\s*$/) {
+         #print "got escaped linefeed with key ".$cont_key."!\n";
+         $cont_line = 1;
+      }
+      else {
+         $cont_line = 0;
+      }
    }
 }
 
