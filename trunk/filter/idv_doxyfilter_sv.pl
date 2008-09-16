@@ -433,7 +433,13 @@ foreach (@infile) {
 #   s/\binterface\s+(\w+)\s*\((.*?)\)\s*;/interface $1($2) {/;
 #   s/\binterface\s+(\w+)\s*;/interface $1() {/;
    if (/\binterface\s+(\w+)\s*/) {
-      $interface_start = 1;
+      if (/".*interface/) {
+         $interface_start = 0; # interface keyword is in a string
+         # TODO: check for 'in a string' condition in separate section
+      }
+      else {
+         $interface_start = 1;
+      }
       if (s/\binterface\s+(\w+)\s*?\((.*?)\)/interface $1($2)/) {}
       elsif (/\binterface\s+?(\w+?)\s*\(/) {
          $interface_start = 1;
@@ -496,10 +502,10 @@ foreach (@infile) {
    # DPI Exports
    # A DPI Import is just another method available at the scope where the import occured
    # Looking for:
-   #   - export ...
+   #   - export \s+"DPI...
    # Current Strategy:
    #   - get rid of the entire line
-   if (/\bexport\b/) {
+   if (/\bexport\s+"DPI/) {
       print "\n";
       next;  # skip to next line of file
    }
@@ -511,6 +517,15 @@ foreach (@infile) {
    # Current Strategy:
    #   - remove space between logic and [
    s/logic\s+\[/logic\[/;
+
+   # String Concatenation
+   # Looking for:
+   #   - { string, string }
+   # Current Strategy:
+   #   - replace all curly braces with parenthesies
+   # TODO: add if required
+#   s/{/\(/;
+#   s/}/\)/;
 
    #-----------------------------------------------------------------------------
    #
