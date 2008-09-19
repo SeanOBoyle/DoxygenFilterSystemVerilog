@@ -184,7 +184,11 @@ foreach (@infile) {
    #   " ... "
    # Current Strategy:
    #   - delete anything inside of double quotes
-   if (s/"(.*)"/" "/) {
+   #   - get rid of the entire line
+   #   - exception - DPI import / export
+   if (/\bexport\s+"DPI/) {}
+   elsif (/\bimport\s+"DPI/) {}
+   elsif (s/"(.*)"/" "/) {
       $str_back = $1;
    }
    else {
