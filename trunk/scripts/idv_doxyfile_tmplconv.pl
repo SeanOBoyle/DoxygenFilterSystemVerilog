@@ -62,12 +62,14 @@ use strict;
 use Getopt::Long;
 
 # Get command line options
+my $path_home = '';
 my $path_doxyscr = '';
 my $path_prj = '';
 my $template_file = '';
 my $delta_file = '';
 my $output_file = '';
-GetOptions ('path_doxyscr=s' => \$path_doxyscr,
+GetOptions ('path_home=s' => \$path_home,
+            'path_doxyscr=s' => \$path_doxyscr,
             'path_prj=s' => \$path_prj,
             'template=s' => \$template_file,
             'delta=s' => \$delta_file,
@@ -87,6 +89,7 @@ my $cont_line = 0;
 my $cont_key = "";
 foreach (@delta_file_arr) {
    # Replace <PATH_*> with $path_* string
+   s/<PATH_HOME>/$path_home/g;
    s/<PATH_PRJ>/$path_prj/g;
    s/<PATH_DOXYSCR>/$path_doxyscr/g;
 
