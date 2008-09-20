@@ -45,6 +45,7 @@ EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = <PATH_HOME>/idv/subversion
 INLINE_INFO            = NO
 SHOW_DIRECTORIES       = YES
 WARN_NO_PARAMDOC       = YES
