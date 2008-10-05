@@ -278,6 +278,8 @@ foreach (@infile) {
    s/`VMM_CONSENSUS\b/vmm_consensus/;
    # HACK: VMM_DATA_BASE_NEW_EXTERN_ARGS; VMM_DATA_NEW_ARGS; etc.
    s/`VMM_.*?_ARGS//;
+   # HACK: vmm_channel(T) macro - make it look like the template version
+   s/`vmm_channel\s*\((\w+)\)/vmm_channel_typed <$1> $1_channel;/;
 
    if (/^\s*`/) {
    
