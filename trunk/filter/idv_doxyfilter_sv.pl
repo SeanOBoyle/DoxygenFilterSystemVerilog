@@ -390,11 +390,13 @@ foreach (@infile) {
    # Looking for:
    # ... program foo;
    # ... program foo(...);
+   # ... program foo(...
    # Current Strategy:
    #   - make look like C++ function that returns type program
    if (/\bprogram\s+(\w)\s*/) {
       $program_start = 1;
       if (s/\bprogram\s+(\w+)\s*\((.*?)\)/program $1($2)/) {}
+      elsif (s/\bprogram\s+(\w+)\s*\((.*?)/program $1($2/) {}
       else {s/\bprogram\s+(\w+)/program $1(/;}
    }
    if ($program_start) {
@@ -411,11 +413,13 @@ foreach (@infile) {
    # Looking for:
    # ... module foo;
    # ... module foo(...);
+   # ... module foo(...
    # Current Strategy:
    #   - make look like C++ function that returns type module
    if (/\bmodule\s+(\w)\s*/) {
       $module_start = 1;
       if (s/\bmodule\s+(\w+)\s*\((.*?)\)/module $1($2)/) {}
+      elsif (s/\bmodule\s+(\w+)\s*\((.*?)/module $1($2/) {}
       else {s/\bmodule\s+(\w+)/module $1(/;}
    }
    if ($module_start) {
@@ -448,7 +452,8 @@ foreach (@infile) {
    #   SV Interface Block
    # Looking for:
    # ... interface foo;
-   # ... program foo(...);
+   # ... interface foo(...);
+   # ... interface foo(...
    # Current Strategy:
    #   - make look like C++ function that returns type interface
 #   s/\binterface\s+(\w+)\s*\((.*?)\)\s*;/interface $1($2) {/;
@@ -456,6 +461,7 @@ foreach (@infile) {
    if (/\binterface\s+(\w+)\s*/) {
       $interface_start = 1;
       if (s/\binterface\s+(\w+)\s*?\((.*?)\)/interface $1($2)/) {}
+      elsif (s/\binterface\s+(\w+)\s*\((.*?)/interface $1($2/) {}
       elsif (/\binterface\s+?(\w+?)\s*\(/) {
          $interface_start = 1;
       }
