@@ -276,6 +276,8 @@ foreach (@infile) {
    s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/; 
    # HACK: vmm preprocessor macro: VMM_CONSENSUS vmm_consensus
    s/`VMM_CONSENSUS\b/vmm_consensus/;
+      # HACK: vmm preprocessor macro: VMM_SCENARIO vmm_scenario
+   s/`VMM_SCENARIO\b/vmm_scenario/;
    # HACK: VMM_DATA_BASE_NEW_EXTERN_ARGS; VMM_DATA_NEW_ARGS; etc.
    s/`VMM_.*?_ARGS//;
    # HACK: vmm_channel(T) macro - make it look like the template version
