@@ -29,10 +29,10 @@
 #                   1) preprocessor macro used to define an SV keyword
 #                        (keywords need to be present in order for the filter to work)
 #                   2) strange (and arguably illegal) SV coding
-# NOTE:         Preprocessor Macros are a PITA! Doxygen does the replace for me - 
+# NOTE:         Preprocessor Macros are a PITA! Doxygen does the replace for me -
 #               and there are a number of instances where an SV pattern to CPP pattern
 #               would work fine IF the preprocessor ran *before* the filter. Sooo...
-#               TODO: integrate SV preprocessor that does the `DEFINE replaces in 
+#               TODO: integrate SV preprocessor that does the `DEFINE replaces in
 #                     this filter.
 #
 # Original Author: Sean O'Boyle
@@ -273,7 +273,7 @@ foreach (@infile) {
    # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_START   interface
    s/`VMM_HW_RTL_COMPONENT_START\b/interface/;
    # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
-   s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/; 
+   s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/;
    # HACK: vmm preprocessor macro: VMM_CONSENSUS vmm_consensus
    s/`VMM_CONSENSUS\b/vmm_consensus/;
       # HACK: vmm preprocessor macro: VMM_SCENARIO vmm_scenario
@@ -284,7 +284,7 @@ foreach (@infile) {
    s/`vmm_channel\s*\((\w+)\)/vmm_channel_typed <$1> $1_channel;/;
 
    if (/^\s*`/) {
-   
+
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       s/`(\w)/$1/g;
@@ -298,7 +298,7 @@ foreach (@infile) {
       print;
       next;  # skip to next line of file
    }
-   
+
    # Remaining BackTickmarks
    # Looking for:
    #  ...`...
@@ -433,7 +433,7 @@ foreach (@infile) {
       }
    }
 
-   
+
    # Initial Block, Final Block
    # Looking for:
    # ... initial ...
@@ -442,7 +442,7 @@ foreach (@infile) {
    # - remove keyword (initial is always followed by begin - begin is transformed to '{' so contents of initial block just look like new scope
    s/\binitial\b//;
    s/\bfinal\b//;
-   
+
    # Virtual Interface Declaration
    # Looking for:
    # ... virtual interface foo ...
@@ -558,9 +558,9 @@ foreach (@infile) {
       print;
       next;  # skip to next line of file
    }
-   
+
    # Pass by Reference
-   # 
+   #
    # Looking for: ... ref foo ...
    # Current Strategy:
    #   - make it look like a C++ reference
@@ -583,7 +583,7 @@ foreach (@infile) {
 #    s/\bimport\s+(\w+)::(.*)?;/using namespace $1;/;
    # HACK: since I'm ignoring packages everything is in the global namespace; so can't extend from a specific package
    s/extends (\w+)::/extends /;
-   
+
 
    # Case Statement
    # SV case looks exactly like C++ case except that C++ case opens with {
@@ -674,7 +674,7 @@ foreach (@infile) {
          }
       }
       if ($template_class == 1 && $derived_class == 0) {
-         s/ { public: / $classname { public: /;
+         s/ { public: / class $classname { public: /;
       }
    }
 
@@ -695,7 +695,7 @@ foreach (@infile) {
       #print STDERR "Template Count = $template at line $infile_line\n";
    }
    if ($template) {
-      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here 
+      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
          if ($template == 0) {
             next; #break
          }
