@@ -186,9 +186,11 @@ foreach (@infile) {
    #   - delete anything inside of double quotes
    #   - get rid of the entire line
    #   - exception - DPI import / export
+   #   - exception - macro declaration
    if (/\bexport\s+"DPI/) {}
    elsif (/\bimport\s+"DPI/) {}
-   elsif (s/"(.*)"/" "/) {
+   elsif (/^\s*`/){}
+   elsif (s/"(.*)"/""/g) {
       $str_back = $1;
    }
    else {
@@ -291,6 +293,7 @@ foreach (@infile) {
       if (/\\\s*$/) {
          $multiline_macro = 1;
       }
+      # Return stripped out comment
       if ($inline_comment ne "") {
          s/$/ $inline_comment/;
          $inline_comment = "";
@@ -340,9 +343,9 @@ foreach (@infile) {
    # Dealing with the contents of a covergroup is tough b/c of all of the curly braces
    # TODO: if covergroup is defined as extern then we're hosed here
    # TODO: if covergroup is defined and implemented in one line then we're hosed here
-   # TODO: if the covergroup has a trigger (@) then this may break
    # TODO: since a covergroup can take parameters we may want to make these look like methods that return type 'covergroup' instead of variables
    if (/\bcovergroup\b/) {
+      s/@(.*)$/;/; # remove the sampling mechanism
       print;  # print covergroup line
       $covergroup = 1;
       next;  # skip to next line of file
@@ -365,14 +368,15 @@ foreach (@infile) {
    #   - Print the first line: it will be documented like a variable of type constraint
    #   - replace the remaining lines with empty lines (so that the code reference lines match)
    if (/\bconstraint\b/) {
-      if (/\{/) {
+      if (s/\{(.*)\}/;/) {} # single line constraint
+      elsif (/\{/) {
          s/\{/;/; # replace } with ; -- document like member variable
          $constraint = 1;
       }
       print; # print constraint to look like member variable
       next;  # skip to next line of file
    }
-   # replace covergroup lines with empty lines
+   # replace constraint lines with empty lines
    if ($constraint) {
       if (/\{/) {
          $constraint++;
@@ -523,7 +527,7 @@ foreach (@infile) {
    }
 
    # DPI Exports
-   # A DPI Import is just another method available at the scope where the import occured
+   # A DPI Export makes a method in this scope available to an external codebase
    # Looking for:
    #   - export \s+"DPI...
    # Current Strategy:
@@ -539,7 +543,7 @@ foreach (@infile) {
    #   - logic[
    # Current Strategy:
    #   - remove space between logic and [
-   s/logic\s+\[/logic\[/;
+#   s/logic\s+\[/logic\[/;
 
    #-----------------------------------------------------------------------------
    #
@@ -584,7 +588,6 @@ foreach (@infile) {
    # HACK: since I'm ignoring packages everything is in the global namespace; so can't extend from a specific package
    s/extends (\w+)::/extends /;
 
-
    # Case Statement
    # SV case looks exactly like C++ case except that C++ case opens with {
    # SV also has special types of case not in C++ (casez, casex)
@@ -605,7 +608,7 @@ foreach (@infile) {
    # Current Strategy:
    #   - get rid of any optional type information
    if (/typedef enum/) {
-   s/enum.*?{/enum {/;
+      s/enum.*?{/enum {/;
    }
    else {
       s/enum.*?{/typedef enum {/;
@@ -652,7 +655,7 @@ foreach (@infile) {
       }
    }
    if ($class_start) {
-      s/\btype /typename /g;
+      s/\btype /typename /g; # 'typename' and 'class' are equivalent
       if (s/;/ { public: /) { # SV defaults to public; C++ defaults to private
          $class = 1; # we're in a class body
          $class_start = 0;
@@ -670,7 +673,7 @@ foreach (@infile) {
       if (/\bextends\b/) {
          $derived_class = 1;
          if ($template_class) {
-            s/\bextends\b/class $classname extends/;
+            s/\bextends\b/ class $classname extends/;
          }
       }
       if ($template_class == 1 && $derived_class == 0) {
@@ -881,9 +884,10 @@ foreach (@infile) {
    #  Looking for:
    #   " ... "
    # Current Strategy:
-   #   - delete anything inside of double quotes
+   #   - return what was removed from the inside of double quotes
    if ($str_back ne "") {
-      s/" "/"$str_back"/;
+      s/""/"$str_back"/;
+      $str_back = "";
    }
 
    # Return the Inline Comment to the End of the Line
@@ -893,4 +897,5 @@ foreach (@infile) {
    }
    print;
 }
+
 
