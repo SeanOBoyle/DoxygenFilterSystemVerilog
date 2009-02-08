@@ -60,6 +60,7 @@ my $doxyblockcomment = 0;
 my $str_back = "";
 my $multiline_macro = 0;
 my $inline_comment = "";
+my $isdpi = 0;
 my $covergroup = 0;
 my $covergroup_name = "";
 my $constraint = 0;
@@ -528,6 +529,7 @@ foreach (@infile) {
 
    # DPI Exports
    # A DPI Export makes a method in this scope available to an external codebase
+   # TODO: take care of multiline dpi export
    # Looking for:
    #   - export \s+"DPI...
    # Current Strategy:
@@ -536,14 +538,6 @@ foreach (@infile) {
       print "\n";
       next;  # skip to next line of file
    }
-
-   # Logic / Bit Vectors
-   # Seems like doxygen prefers a no space between logic and width
-   # Looking for:
-   #   - logic[
-   # Current Strategy:
-   #   - remove space between logic and [
-#   s/logic\s+\[/logic\[/;
 
    #-----------------------------------------------------------------------------
    #
@@ -557,10 +551,10 @@ foreach (@infile) {
    # Current Strategy:
    #   - make it look like a C++ function; remove the import "DPI.."
    if (/\bimport\s+"DPI/) {
-      s/import\s+"DPI.*"\s+function(.*);/$1 {}/;
-      s/import\s+"DPI.*"\s+task(.*);/$1 {}/;
-      print;
-      next;  # skip to next line of file
+      $isdpi = 1;
+      $function_start = 1;
+      s/import\s+"DPI.*".*function/function/;
+      s/import\s+"DPI.*".*task/task/;
    }
 
    # Pass by Reference
@@ -797,6 +791,12 @@ foreach (@infile) {
             $function_start = 0;
          }
       }
+      elsif ($isdpi) {
+         if (s/;\s*$/ {}\n/) {
+            $isdpi = 0;
+            $function_start = 0;
+         }      
+      }
       elsif (s/;/ {/) {
          $function = 1; # in a method body
          $function_start = 0;
@@ -867,8 +867,8 @@ foreach (@infile) {
    #   - task taskscope::taskname ( ...
    # Current Strategy:
    #   - remove word task from the line
-   #   - add return type of void
-   s/\btask\b/void/;
+   #   - add return type of 'task'
+   #s/\btask\b/void/; # originally I changed the word task to void - to show the task as a void function
 
    # Derived Class (and the access specifier)
    # SV Derived Class inherits base class members without affecting the access permissions
