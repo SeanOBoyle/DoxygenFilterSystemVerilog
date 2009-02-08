@@ -58,6 +58,27 @@
  string dpi_method2() {}
  string dpi_method3() {}
  string dpi_method4(int n) {}
+ void myInit() {}
+ // from standard math library
+ real sin(real) {}
+ // from standard C library: memory management
+ chandle malloc(int size) {} // standard C function
+ void free(chandle ptr) {} // standard C function
+ // abstract data structure: queue
+ chandle newQueue(input string name_of_queue) {}
+ // Note the following import uses the same foreign function for
+ // implementation as the prior import, but has different SystemVerilog name
+ // and provides a default value for the argument.
+ chandle newAnonQueue(input string s=null) {}
+ chandle newElem(bit <15:0> ) {}
+ void enqueue(chandle queue, chandle elem) {}
+ chandle dequeue(chandle queue) {}
+ // miscellanea
+ bit <15:0>  getStimulus() {}
+ void processTransaction(chandle elem,
+                                       output logic <64:1>  arr [0:63]) {}
+task checkResults(input string s, bit <511:0>  packet) {}
+
 
  // DPI Export
 
@@ -287,7 +308,7 @@ public:
     *  @return void
     *
     */
-   virtual void mypublicvirtualfunction() {
+   virtual task mypublicvirtualfunction() {
       $display("This is public");
    }
    
@@ -298,7 +319,7 @@ public:
     *  @return void
     *
     */
-   virtual void mypurevirtualtask() = 0;
+   virtual task mypurevirtualtask() = 0;
    
    /**
     *  Protected Task.
@@ -307,7 +328,7 @@ public:
     *  @return void
     *
     */
-protected:     void myprotectedfunction() {
+protected:     task myprotectedfunction() {
       $display("This is protected");
    }
 public:    
@@ -318,7 +339,7 @@ public:
     *  @return void
     *
     */
-protected:     void myprotectedfunction() {
+protected:     task myprotectedfunction() {
       $display("This is protected");
    }
 public: 

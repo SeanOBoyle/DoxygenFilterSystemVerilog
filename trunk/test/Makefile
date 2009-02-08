@@ -48,16 +48,11 @@
 #
 #-----------------------------------------------------------------------------
 
-PATH_ROOT = ../../..
-PATH_DOXYSCR = $(PATH_ROOT)/Doxygen/tags/1.5.5
-
-ifdef TRUNK
-  PATH_ROOT = ../..
-  PATH_DOXYSCR = $(PATH_ROOT)/Doxygen/trunk
-endif
+PATH_ROOT = ..
+PATH_DOXYSCR = $(PATH_ROOT)
 
 PATH_HOME = $(HOME)
-PATH_PRJ = $(PATH_ROOT)/Doxygen/trunk
+PATH_PRJ = $(PATH_ROOT)
 DOXYGEN = doxygen
 DOXYFILE_BASE = $(PATH_DOXYSCR)/doxyfile/Doxyfile.template
 DOXYFILE_SVDELT = $(PATH_DOXYSCR)/doxyfile/idv_doxyfile_sv.delta
