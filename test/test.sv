@@ -611,7 +611,22 @@ class mytemplateclass10 #(type T=int,
    bit m_mybit;
 endclass
 
+class mytemplateselectclass #(type ABC=data, type DEF=data2)
+`ifdef DEFBASE
+  extends `DEFBASE
+`endif
+;
+endclass
 
+class myselectclass
+`ifdef DEFBASE
+  extends `DEFBASE
+`endif
+;
+endclass
+
+class abc #(type f = null, type g = z, type h = x) extends def #(f);
+endclass
 
 `endif
 

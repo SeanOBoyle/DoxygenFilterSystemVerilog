@@ -507,7 +507,7 @@ class myderivedclass_package : public test_class_basic { public:
  * type T=int
  * extends test_class_basic
  */
-template  <typename T=int>   class mytemplateclass : public test_class_basic { public: 
+template  <typename T=int> class mytemplateclass : public test_class_basic { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -517,7 +517,7 @@ template  <typename T=int>   class mytemplateclass : public test_class_basic { p
  * type T=custom
  * extends mytemplateclass#(bit)
  */
-template  <typename T=custom>   class mytemplateclass2 : public mytemplateclass<bit>  { public: 
+template  <typename T=custom> class mytemplateclass2 : public mytemplateclass<bit>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -527,7 +527,7 @@ template  <typename T=custom>   class mytemplateclass2 : public mytemplateclass<
  * type T=int, type B=bit
  * extends mytemplateclass#(bit)
  */
-template  <typename T=int, typename B=bit>   class mytemplateclass3 : public mytemplateclass<bit>  { public: 
+template  <typename T=int, typename B=bit> class mytemplateclass3 : public mytemplateclass<bit>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -537,7 +537,7 @@ template  <typename T=int, typename B=bit>   class mytemplateclass3 : public myt
  * type T=int
  * extends nothing...
  */
-template  <typename T=int>  class mytemplateclass4 { public: 
+template  <typename T=int> class mytemplateclass4   { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -547,7 +547,7 @@ template  <typename T=int>  class mytemplateclass4 { public:
  * int B=3
  * extends nothing...
  */
-template  <int B=3>  class mytemplateclass5 { public: 
+template  <int B=3> class mytemplateclass5   { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -557,7 +557,7 @@ template  <int B=3>  class mytemplateclass5 { public:
  * type T=int, int B=3
  * extends nothing...
  */
-template  <typename T=int, int B=3>  class mytemplateclass6 { public: 
+template  <typename T=int, int B=3> class mytemplateclass6   { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -567,7 +567,7 @@ template  <typename T=int, int B=3>  class mytemplateclass6 { public:
  * type T=int, int B=3
  * extends mytemplateclass#(bit)
  */
-template  <typename T=int, int B=3>   class mytemplateclass7 : public mytemplateclass <bit>  { public: 
+template  <typename T=int, int B=3> class mytemplateclass7 : public mytemplateclass <bit>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -579,8 +579,8 @@ template  <typename T=int, int B=3>   class mytemplateclass7 : public mytemplate
  */
 template  <typename T=int,
                          int B=3,
-                         typename C=mine> 
-                          class mytemplateclass8 : public mytemplateclass6<bit,
+                         typename C=mine> class mytemplateclass8  
+                         : public mytemplateclass6<bit,
                                                    5>  { public: 
    int m_myint;
    bit m_mybit;
@@ -593,8 +593,8 @@ template  <typename T=int,
  */
 template  <typename T=int,
                          int B=3,
-                         typename C=mine> 
-                          class mytemplateclass9 : public mytemplateclass6<bit,5>  { public: 
+                         typename C=mine> class mytemplateclass9  
+                         : public mytemplateclass6<bit,5>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -606,12 +606,27 @@ template  <typename T=int,
  */
 template  <typename T=int,
                          int B=3,
-                         typename C=mine>  class mytemplateclass10 { public: 
+                         typename C=mine> class mytemplateclass10   { public: 
    int m_myint;
    bit m_mybit;
 };
 
+template  <typename ABC=data, typename DEF=data2> class mytemplateselectclass  
+#ifdef DEFBASE
+  : public DEFBASE
+#endif
+ { public: 
+};
 
+class myselectclass
+#ifdef DEFBASE
+  : public DEFBASE
+#endif
+ { public: 
+};
+
+template  <typename f = null, typename g = z, typename h = x> class abc : public def <f>  { public: 
+};
 
 #endif
 
