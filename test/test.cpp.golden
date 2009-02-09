@@ -1,4 +1,4 @@
- // $Id$
+ // $Id_deleteme$
  //----------------------------------------------------------------------------
  //    This program is free software: you can redistribute it and/or modify
  //    it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  //
  //----------------------------------------------------------------------------
-
+ // NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
 /**
  * Test.
  * This file is a test of the doxygen filter script.<br>
@@ -37,11 +37,11 @@
  * <a href="http://intelligentdv.com">Intelligent Design Verification</a>
  *
  * @version
- * $LastChangedRevision$
+ * $LastChangedRevision_deleteme$
  * @par Last Change Date:
- * $LastChangedDate$
+ * $LastChangedDate_deleteme$
  * @par Last Change By:
- * $LastChangedBy$
+ * $LastChangedBy_deleteme$
  *
  */
 
