@@ -74,6 +74,7 @@ my $classname = "";
 my $class_start = 0;
 my $derived_class = 0;
 my $template_class = 0;
+my $template_class_drop = 0;
 my $template = 0;
 my $access_specifier = "";
 my $function = 0;
@@ -633,6 +634,24 @@ foreach (@infile) {
    #
    s/\btype REQ=int,RSP=int/typename REQ=int, typename RSP=int/; # HACK: support for OVM weirdness
 
+   # Parameterized Class Usage
+   #
+   # Current Strategy:
+   #   - keep track of opening and closing #( )
+   #   - convert to C++ template instances < >
+   while (s/\#\(/</g) {
+      $template++;
+      #print STDERR "Template Count = $template at line $infile_line\n";
+   }
+   if ($template) {
+      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
+         if ($template == 0) {
+            next; #break
+         }
+         $template--;
+      }
+   }
+
    if (/\bclass(\s+)(\w+)/) {
       $class_start = 1;
       $classname = $2;
@@ -655,7 +674,7 @@ foreach (@infile) {
          $class_start = 0;
          $access_specifier = "public";
       }
-      if (/\#\(/) {
+      if (/</) {
          $template_class = 1;
          s/class(\s+)(\w+)/template /;
       }
@@ -663,41 +682,26 @@ foreach (@infile) {
          $template_class = 1;
          s/class(\s+)(\w+)/template /;
       }
-
-      if (/\bextends\b/) {
-         $derived_class = 1;
-         if ($template_class) {
-            s/\bextends\b/ class $classname extends/;
+      
+      if ($template_class == 1 && $template == 0 && $template_class_drop == 0) {
+         if (s/(.*)>\s+extends\s+(.*)$/$1> class $classname extends $2/) {
+            $template_class_drop = 1;
          }
+         elsif (s/(.*)>(.*)$/$1> class $classname $2/) {
+            $template_class_drop = 1;
+         }
+         else {}
+         $template_class = 0;
       }
-      if ($template_class == 1 && $derived_class == 0) {
-         s/ { public: / class $classname { public: /;
-      }
+
    }
 
    if (/\bendclass\b/) {
       $class_start = 0;
       $derived_class = 0;
       $template_class = 0;
+      $template_class_drop = 0;
       $class = 0; # we're not in a class body
-   }
-
-   # Parameterized Class Usage
-   #
-   # Current Strategy:
-   #   - keep track of opening and closing #( )
-   #   - convert to C++ template instances < >
-   while (s/\#\(/</g) {
-      $template++;
-      #print STDERR "Template Count = $template at line $infile_line\n";
-   }
-   if ($template) {
-      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
-         if ($template == 0) {
-            next; #break
-         }
-         $template--;
-      }
    }
 
    # Class Access Specifier
