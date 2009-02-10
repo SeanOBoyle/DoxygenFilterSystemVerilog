@@ -291,6 +291,9 @@ foreach (@infile) {
 
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
+      s/`"(\w+)`"/#$1/;
+      s/`"/"/g;
+      s/`\\/\\/g;
       s/`(\w)/$1/g;
       if (/\\\s*$/) {
          $multiline_macro = 1;
