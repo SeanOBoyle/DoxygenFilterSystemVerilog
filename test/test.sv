@@ -51,7 +51,13 @@
 timeunit 1 ns;
 timeprecision 1 ps;
 
+
+`define PUTINQUOTES(x) `"x`"
+
 `include "myfile.sv"
+`define MYOTHERFILE myotherfile.sv
+`include `PUTINQUOTES(`MYOTHERFILE)
+
 
 // DPI Import
 import "DPI-C" function int dpi_method1(input string str1, input string regex);

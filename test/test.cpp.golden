@@ -51,7 +51,13 @@
 
 
 
+
+#define PUTINQUOTES(x) #x
+
 #include "myfile.sv"
+#define MYOTHERFILE myotherfile.sv
+#include PUTINQUOTES(MYOTHERFILE)
+
 
  // DPI Import
  int dpi_method1(input string str1, input string regex) {}
@@ -93,11 +99,11 @@ task checkResults(input string s, bit <511:0>  packet) {}
 
  // More Macros
 #define foo(f) f##_suffix
-#define msg(x,y) `"x: `\`"y`\`"`"
+#define msg(x,y) "x: \"y\""
 
  // Multiline Macros (from VMM)
 #ifndef __FILE__
-#define __FILE__ `"`"
+#define __FILE__ ""
 #endif
 #ifndef __LINE__
 #define __LINE__ -1
