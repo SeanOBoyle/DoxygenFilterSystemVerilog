@@ -84,6 +84,10 @@ my $function_start = 0;
 my $ispure = 0;
 my $isextern = 0;
 
+my $moduleinterface = 0;
+my $moduleprogram = 0;
+my $modulemodule = 0;
+
 my @infile = <>;  # slurp from STDIN
 my $infile_line = 0;
 # Process the SV File Line-by-Line
@@ -405,6 +409,7 @@ foreach (@infile) {
    #   - make look like C++ function that returns type program
    if (/\bprogram\s+(\w)\s*/) {
       $program_start = 1;
+      $moduleprogram = 1;
       if (s/\bprogram\s+(\w+)\s*\((.*?)\)/\/** \@ingroup SVprogram *\/program $1($2)/) {}
       elsif (s/\bprogram\s+(\w+)\s*\((.*?)/\/** \@ingroup SVprogram *\/program $1($2/) {}
       else {s/\bprogram\s+(\w+)/\/** \@ingroup SVprogram *\/program $1(/;}
@@ -446,6 +451,14 @@ foreach (@infile) {
    # Current Strategy:
    #   - make look like C++ function that returns type interface
    if (/\b(interface|module)\s+/) {
+
+      if ($1 eq "interface") {
+         $moduleinterface = 1;
+      }
+      if ($1 eq "module") {
+         $modulemodule = 1;
+      }
+
       $interface_start = 1;
       if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/\/** \@ingroup SV$1 *\/$1 $2($3)/) {}
       elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/\/** \@ingroup SV$1 *\/$1 $2($3/) {}
@@ -899,7 +912,13 @@ foreach (@infile) {
 }
 
 # Define Doxygen Modules
-print "/** \@defgroup SVinterface Interfaces */\n";
-print "/** \@defgroup SVprogram Programs */\n";
-print "/** \@defgroup SVmodule Modules */\n";
+if ($moduleinterface) {
+   print "/** \@defgroup SVinterface Interfaces */\n";
+}
+if ($moduleprogram) {
+   print "/** \@defgroup SVprogram Programs */\n";
+}
+if ($modulemodule) {
+   print "/** \@defgroup SVmodule Modules */\n";
+}
 
