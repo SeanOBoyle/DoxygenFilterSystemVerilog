@@ -467,6 +467,17 @@ endmodule: mymodule2
 
 /**
  * BusA interface Block.
+ * An interface with no ports.
+ */
+interface bus;
+      logic [15:0] data;
+      logic write;
+      modport test (input data, output write);
+      modport dut (output data, input write);
+endinterface
+
+/**
+ * BusA interface Block.
  * An interface with single clock input.
  */
 interface bus_A (input clk);
@@ -489,6 +500,55 @@ interface bus_B (input clk,
       modport dut (output enable);
 endinterface
 
+/**
+ * BusC interface Block.
+ * A parameterized interface in one line
+ */
+interface bus_C #(WIDTH=8) (input clk, output foo);
+      logic [WDTH-1:0] cmd;
+      logic enable;
+      modport test (input enable);
+      modport dut (output enable);
+endinterface
+
+/**
+ * BusD interface Block.
+ * A parameterized interface with two lines of IO
+ */
+interface bus_D #(WIDTH=8) (input clk, 
+                            output foo);
+      logic [WDTH-1:0] cmd;
+      logic enable;
+      modport test (input enable);
+      modport dut (output enable);
+endinterface
+
+/**
+ * BusE interface Block.
+ * A parameterized interface with two lines of parameters and one lines of IO
+ */
+interface bus_E #(WIDTH=8,
+                  DEPTH=20) (input clk, output foo);
+      logic [WDTH-1:0] cmd;
+      logic enable;
+      logic arr [DEPTH];
+      modport test (input enable);
+      modport dut (output enable);
+endinterface
+
+/**
+ * BusF interface Block.
+ * A parameterized interface with two lines of parameters and two lines of IO
+ */
+interface bus_F #(WIDTH=8,
+                  DEPTH=20) (input clk,
+                             output foo);
+      logic [WDTH-1:0] cmd;
+      logic enable;
+      logic arr [DEPTH];
+      modport test (input enable);
+      modport dut (output enable);
+endinterface
 
 /**
  * My Derived Class.
