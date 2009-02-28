@@ -39,6 +39,7 @@
 FILE_PATTERNS          = *.svh *.sv *.cpp *.c *.h
 EXAMPLE_PATTERNS       = *.sv, *.svh
 FILTER_PATTERNS        = *.sv=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl *.svh=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl
+LAYOUT_FILE            = <PATH_DOXYSCR>/doxyfile/idv_doxylayout.xml
 JAVADOC_AUTOBRIEF      = YES
 TAB_SIZE               = 3
 EXTRACT_ALL            = YES
