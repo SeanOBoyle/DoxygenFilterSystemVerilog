@@ -67,6 +67,8 @@ my $constraint = 0;
 my $program_start = 0;
 my $module_start = 0;
 my $interface_start = 0;
+my $interface_name = "";
+my $interface_template_start = 0;
 my $stringconcat = 0;
 my $onelinestringconcat = "";
 my $class = 0;
@@ -416,30 +418,6 @@ foreach (@infile) {
       }
    }
 
-   # Module Block
-   #   SV Module Block
-   # Looking for:
-   # ... module foo;
-   # ... module foo(...);
-   # ... module foo(...
-   # Current Strategy:
-   #   - make look like C++ function that returns type module
-   if (/\bmodule\s+(\w)\s*/) {
-      $module_start = 1;
-      if (s/\bmodule\s+(\w+)\s*\((.*?)\)/module $1($2)/) {}
-      elsif (s/\bmodule\s+(\w+)\s*\((.*?)/module $1($2/) {}
-      else {s/\bmodule\s+(\w+)/module $1(/;}
-   }
-   if ($module_start) {
-      if (s/\)\s*;/) {/) {
-         $module_start = 0;
-      }
-      elsif (s/;/) {/) {
-         $module_start = 0;
-      }
-   }
-
-
    # Initial Block, Final Block
    # Looking for:
    # ... initial ...
@@ -456,34 +434,52 @@ foreach (@infile) {
    #   - make look like C++ variable of type foo (remove string 'virtual interface'
    s/\bvirtual\s+?interface//;
 
-   # Interface Block
+   # Interface (and Module) Block
    #   SV Interface Block
    # Looking for:
    # ... interface foo;
    # ... interface foo(...);
    # ... interface foo(...
+   # ... interface #(...) foo(...);
+   # ... interface #(...
+   #                 ...) foo (...);
    # Current Strategy:
    #   - make look like C++ function that returns type interface
-#   s/\binterface\s+(\w+)\s*\((.*?)\)\s*;/interface $1($2) {/;
-#   s/\binterface\s+(\w+)\s*;/interface $1() {/;
-   if (/\binterface\s+(\w+)\s*/) {
+   if (/\b(interface|module)\s+/) {
       $interface_start = 1;
-      if (s/\binterface\s+(\w+)\s*?\((.*?)\)/interface $1($2)/) {}
-      elsif (s/\binterface\s+(\w+)\s*\((.*?)/interface $1($2/) {}
-      elsif (/\binterface\s+?(\w+?)\s*\(/) {
+      if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/$1 $2($3)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/$1 $2($3/) {}
+      elsif (/\b(interface|module)\s+(\w+)\s*\(/) {
          $interface_start = 1;
+         $interface_name = $1;
       }
-      else {s/\binterface\s+(\w+)/interface $1()/;}
+      else {s/\b(interface|module)\s+(\w+);/$1 $2();/;}
+   
+      if (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*#\(/template </) {
+         $interface_start = 1;
+         $interface_name = $1." ".$2;
+         $interface_template_start = 1;
+      }
+      else {};
    }
+   if ($interface_template_start) {
+      if (s/\)/> $interface_name /) {
+         $interface_template_start = 0;
+      }         
+   }
+
    if ($interface_start) {
       if (s/\)\s*;/) {/) {
          $interface_start = 0;
+         $interface_template_start = 0;
       }
       elsif (s/;/) {/) {
          $interface_start = 0;
+         $interface_template_start = 0;
       }
    }
-
 
    # Logic Types with defined widths
    # Looking for:
