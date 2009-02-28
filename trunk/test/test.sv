@@ -466,7 +466,7 @@ module mymodule2(int myint,
 endmodule: mymodule2
 
 /**
- * BusA interface Block.
+ * Bus interface Block.
  * An interface with no ports.
  */
 interface bus;
@@ -695,4 +695,5 @@ class abc #(type f = null, type g = z, type h = x) extends def #(f);
 endclass
 
 `endif
+
 

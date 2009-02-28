@@ -405,9 +405,9 @@ foreach (@infile) {
    #   - make look like C++ function that returns type program
    if (/\bprogram\s+(\w)\s*/) {
       $program_start = 1;
-      if (s/\bprogram\s+(\w+)\s*\((.*?)\)/program $1($2)/) {}
-      elsif (s/\bprogram\s+(\w+)\s*\((.*?)/program $1($2/) {}
-      else {s/\bprogram\s+(\w+)/program $1(/;}
+      if (s/\bprogram\s+(\w+)\s*\((.*?)\)/\/** \@ingroup SVprogram *\/program $1($2)/) {}
+      elsif (s/\bprogram\s+(\w+)\s*\((.*?)/\/** \@ingroup SVprogram *\/program $1($2/) {}
+      else {s/\bprogram\s+(\w+)/\/** \@ingroup SVprogram *\/program $1(/;}
    }
    if ($program_start) {
       if (s/\)\s*;/) {/) {
@@ -447,17 +447,17 @@ foreach (@infile) {
    #   - make look like C++ function that returns type interface
    if (/\b(interface|module)\s+/) {
       $interface_start = 1;
-      if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/$1 $2($3)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/$1 $2($3/) {}
+      if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/\/** \@ingroup SV$1 *\/$1 $2($3)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/\/** \@ingroup SV$1 *\/$1 $2($3/) {}
       elsif (/\b(interface|module)\s+(\w+)\s*\(/) {
          $interface_start = 1;
          $interface_name = $1;
       }
-      else {s/\b(interface|module)\s+(\w+);/$1 $2();/;}
+      else {s/\b(interface|module)\s+(\w+);/\/** \@ingroup SV$1 *\/$1 $2();/;}
    
-      if (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*#\(/template </) {
+      if (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)\)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*#\(/\/** \@ingroup SV$1 *\/template </) {
          $interface_start = 1;
          $interface_name = $1." ".$2;
          $interface_template_start = 1;
@@ -467,7 +467,7 @@ foreach (@infile) {
    if ($interface_template_start) {
       if (s/\)/> $interface_name /) {
          $interface_template_start = 0;
-      }         
+      }
    }
 
    if ($interface_start) {
@@ -898,4 +898,8 @@ foreach (@infile) {
    print;
 }
 
+# Define Doxygen Modules
+print "/** \@defgroup SVinterface Interfaces */\n";
+print "/** \@defgroup SVprogram Programs */\n";
+print "/** \@defgroup SVmodule Modules */\n";
 
