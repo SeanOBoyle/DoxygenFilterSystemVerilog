@@ -60,6 +60,7 @@ my $doxyblockcomment = 0;
 my $str_back = "";
 my $multiline_macro = 0;
 my $inline_comment = "";
+my $inline_block_comment = "";
 my $isdpi = 0;
 my $covergroup = 0;
 my $covergroup_name = "";
@@ -117,9 +118,8 @@ foreach (@infile) {
          $inline_comment = $1;
          s/\/\/.*//;  # strip comment off of the line
       }
-      elsif (/(\/\*.*\*\/)/) {
-         $inline_comment = $1;
-         s/\/\*.*\*\///;  # strip comment off of the line
+      elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
+         $inline_block_comment = $1;
       }
    }
 
@@ -128,7 +128,7 @@ foreach (@infile) {
    #   /*
    # Current Strategy:
    #   - skip all commented lines
-   if (/\/\*/) {
+   if ((!$inline_block_comment)&&(/\/\*/)) {
       $blockcomment = 1;
    }
 
@@ -301,21 +301,7 @@ foreach (@infile) {
       if (/\\\s*$/) {
          $multiline_macro = 1;
       }
-      # Return stripped out comment
-      if ($inline_comment ne "") {
-         s/$/ $inline_comment/;
-         $inline_comment = "";
-      }
-      print;
-      next;  # skip to next line of file
    }
-
-   # Remaining BackTickmarks
-   # Looking for:
-   #  ...`...
-   # Current Strategy:
-   #    - get rid of any backtickmarks that remain (after the above more accurate conversions)
-   s/`//g;
 
    # Multiline Preprocessor Macros
    # Assuming that the only use of line continuation marker is for multiline preprocessor macros
@@ -325,15 +311,25 @@ foreach (@infile) {
    #   - print the line as is; don't try to continue filtering the line
    #   - the last line of the macro doesn't have an escape - so we keep track of this
    if ($multiline_macro) {
+      s/``/##/g;
+      s/`"(\w+)`"/#$1/;
+      s/`"/"/g;
+      s/`\\/\\/g;
+      s/`(\w)/$1/g;
       if (/\\\s*$/) {
          $multiline_macro = 1;
       }
       else {
          $multiline_macro = 0;
       }
-      print;
-      next;  # skip to next line of file
    }
+
+   # Remaining BackTickmarks
+   # Looking for:
+   #  ...`...
+   # Current Strategy:
+   #    - get rid of any backtickmarks that remain (after the above more accurate conversions)
+   s/`//g;
 
    #-----------------------------------------------------------------------------
    #
@@ -468,9 +464,9 @@ foreach (@infile) {
       }
       else {s/\b(interface|module)\s+(\w+);/\/** \@ingroup SV$1 *\/$1 $2();/;}
    
-      if (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)\)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*#\((.*)\)\s*\((.*?)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*#\(/\/** \@ingroup SV$1 *\/template </) {
+      if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/\/** \@ingroup SV$1 *\/template </) {
          $interface_start = 1;
          $interface_name = $1." ".$2;
          $interface_template_start = 1;
@@ -648,20 +644,24 @@ foreach (@infile) {
    # Current Strategy:
    #   - keep track of opening and closing #( )
    #   - convert to C++ template instances < >
-   while (s/\#\(/</g) {
+   while (s/\#\s*\(/</) {
       $template++;
       #print STDERR "Template Count = $template at line $infile_line\n";
    }
    if ($template) {
-      while (s/\)/> /g) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
-         if ($template == 0) {
-            next; #break
-         }
+      $_ = scalar reverse; # reverse to search right to left
+      while (s/\)/ >/) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
          $template--;
+         if ($template <= 0) {
+            last; #break
+         }
+         #print STDERR "Template Count = $template at line $infile_line\n";
       }
+      $_ = scalar reverse;
+      #print STDERR "Out: Template Count = $template at line $infile_line\n";
    }
 
-   if (/\bclass(\s+)(\w+)/) {
+   if (/\bclass(\s+)(\S+)/) { # was /class(\s+)(\w+)/ -- but need to support class definition in macros
       $class_start = 1;
       $classname = $2;
       # C++ does not declare abstract classes (C++ abstract class just has pure methods declared)
@@ -685,11 +685,11 @@ foreach (@infile) {
       }
       if (/</) {
          $template_class = 1;
-         s/class(\s+)(\w+)/template /;
+         s/class(\s+)(\S+)/template /;
       }
-      elsif ($infile[$infile_line] =~ /^(\s*?)\#\(/) {
+      elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) {
          $template_class = 1;
-         s/class(\s+)(\w+)/template /;
+         s/class(\s+)(\S+)/template /;
       }
       
       if ($template_class == 1 && $template == 0 && $template_class_drop == 0) {
@@ -908,6 +908,11 @@ foreach (@infile) {
       s/$/ $inline_comment/;
       $inline_comment = "";
    }
+   if ($inline_block_comment ne "") {
+      s/\/\*\*\//\/\*$inline_block_comment\*\//;
+      $inline_block_comment = "";
+   }
+
    print;
 }
 
