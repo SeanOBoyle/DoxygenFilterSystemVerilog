@@ -155,11 +155,21 @@ class `vmm_channel_(T) extends vmm_channel; \
       $cast(unput, super.unput(offset)); \
    endfunction: unput \
  \
+   constraint myconstraint { \
+      depth == 3; \
+      foo == 5; \
+   } \
+   \
    task get(output T obj, input int offset = 0); \
       vmm_data o; \
       super.get(o, offset); \
       $cast(obj, o); \
    endtask: get \
+   \
+   covergroup mycov; \
+      coverpoint m_depth; \
+      coverpoint m_full; \
+   endgroup: cov2 \
  \
    task peek(output T obj, input int offset = 0); \
       vmm_data o; \
@@ -251,6 +261,13 @@ class test_class_basic;
       // This is a comment
       m_public_bitvector[1:0] == 2'd0;
    }
+
+   /**
+    * Extern Constraint.
+    * Constraint body defined extern.
+    *
+    */
+   constraint extern_constraint;
    
    /**
     * Cov1 Coverage Group.
@@ -270,8 +287,40 @@ class test_class_basic;
    covergroup cov2 @ m_protected_bit;
       coverpoint m_protected_bit;
       coverpoint m_protected_int;
-   endgroup: cov2   
-   
+   endgroup: cov2
+
+   /**
+    * Cov3 Coverage Group with args.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+   covergroup cov3 (int arg1, int arg2);
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   endgroup: cov3
+
+   /**
+    * Cov4 Coverage Group with args on 2 lines.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+   covergroup cov4 (int arg1,
+                    int arg2);
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   endgroup: cov4
+
+   /**
+    * Cov5 Coverage Group with args on with sampling.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+   covergroup cov5 (int arg1,
+                    int arg2) @ m_protected_bit;
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   endgroup: cov5
+
    /**
     *  Constructor.
     *  Class Constructor<br>
@@ -389,6 +438,10 @@ class test_class_basic;
     endfunction: myvirtualfunction
 
 endclass:test_class_basic
+
+constraint test_class_basic::extern_constraint {
+   m_local_int == m_protected_int;
+}
 
 // Extern Function show()
 // Test string in quotes
@@ -677,11 +730,21 @@ class mytemplateclass10 #(type T=int,
    bit m_mybit;
 endclass
 
+/**
+ * My Class11.
+ * extends template class...
+ */
+class myclass11 extends mytemplateclass10 #(foo, 5, boo);
+   int m_myint;
+endclass
+
+
 class mytemplateselectclass #(type ABC=data, type DEF=data2)
 `ifdef DEFBASE
   extends `DEFBASE
 `endif
 ;
+   int m_myint;
 endclass
 
 class myselectclass
@@ -689,9 +752,11 @@ class myselectclass
   extends `DEFBASE
 `endif
 ;
+   int m_myint;
 endclass
 
 class abc #(type f = null, type g = z, type h = x) extends def #(f);
+   int m_myint;
 endclass
 
 `endif

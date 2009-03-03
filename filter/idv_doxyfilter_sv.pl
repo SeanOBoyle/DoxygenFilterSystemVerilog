@@ -111,7 +111,7 @@ foreach (@infile) {
    # Current Strategy:
    #   - skip all commented lines
    #   - Don't want to filter the comment so we remove the comment
-   #   - BUT - we want to save the comment if it was a doxygen comment
+   #   - BUT - we want to save the comment if it was an inline or doxygen comment
    #           so we'll put back the comment at the end
    if (!$blockcomment) {
       if (/(\/\/.*)/) {
@@ -275,7 +275,7 @@ foreach (@infile) {
    #   - replace the backtick with a pound sign (#) for defined C++ macros
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
-   #   - print the line as is; don't try to continue filtering the line
+   #   - continue filtering the line
 
    # HACK - in OVM `define for _protected is protected
    s/`_protected/protected/;
@@ -342,25 +342,16 @@ foreach (@infile) {
    #    ...
    #  endgroup
    # Current Strategy:
-   #   - Print the first line: it will be documented like a variable of type covergroup
-   #   - replace the remaining lines with empty lines (so that the code reference lines match)
-   # Dealing with the contents of a covergroup is tough b/c of all of the curly braces
-   # TODO: if covergroup is defined as extern then we're hosed here
-   # TODO: if covergroup is defined and implemented in one line then we're hosed here
-   # TODO: since a covergroup can take parameters we may want to make these look like methods that return type 'covergroup' instead of variables
-   if (/\bcovergroup\b/) {
-      s/@(.*)$/;/; # remove the sampling mechanism
-      print;  # print covergroup line
+   #   - Make look like C function that returns type covergroup
+   # NOTE:Dealing with the contents of a covergroup is tough b/c of all of the curly braces
+   if (s/\bcovergroup\b/function covergroup/) { # make look like function for function processing (below)
       $covergroup = 1;
-      next;  # skip to next line of file
    }
-   # replace covergroup lines with empty lines
    if ($covergroup) {
-      if (/\bendgroup\b/) {
-        $covergroup = 0;
-      }
-      print "\n";  # print empty line
-      next;  # skip to next line of file
+      s/\@(.*?);/;/; #remove sampling
+   }
+   if (s/\bendgroup\b/endfunction/) { # make look like function for function processing (below)
+      $covergroup = 0;
    }
 
    # Constraints
@@ -369,31 +360,10 @@ foreach (@infile) {
    #    ...
    #  }
    # Current Strategy:
-   #   - Print the first line: it will be documented like a variable of type constraint
-   #   - replace the remaining lines with empty lines (so that the code reference lines match)
-   if (/\bconstraint\b/) {
-      if (s/\{(.*)\}/;/) {} # single line constraint
-      elsif (/\{/) {
-         s/\{/;/; # replace } with ; -- document like member variable
-         $constraint = 1;
-      }
-      print; # print constraint to look like member variable
-      next;  # skip to next line of file
-   }
-   # replace constraint lines with empty lines
-   if ($constraint) {
-      if (/\{/) {
-         $constraint++;
-      }
-      if (/\}/) {
-         $constraint--;
-      }
-      if ($constraint < 0) {
-         $constraint = 0;
-      }
-      print "\n";  # print empty line
-      next;  # skip to next line of file
-   }
+   #   - change to make it look like a method that returns type constraint
+   #
+   s/\bconstraint(\s+)(\S+);/constraint $2();/;
+   s/\bconstraint(\s+)(\S+)(\s*)\{/constraint $2() { /;
 
    # Program Block
    #   SV Program Block
@@ -683,7 +653,7 @@ foreach (@infile) {
          $class_start = 0;
          $access_specifier = "public";
       }
-      if (/</) {
+      if (/class(\s+)(\S+)(\s*)</) {
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
