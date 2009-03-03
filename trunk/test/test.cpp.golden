@@ -155,10 +155,20 @@ class vmm_channel_(T) : public vmm_channel { public:  \
       $cast(unput, super.unput(offset)); \
    } \
  \
+   constraint myconstraint() {  \
+      depth == 3; \
+      foo == 5; \
+   } \
+   \
    task get(output T obj, input int offset = 0) { \
       vmm_data o; \
       super.get(o, offset); \
       $cast(obj, o); \
+   } \
+   \
+    covergroup mycov() { \
+      coverpoint m_depth; \
+      coverpoint m_full; \
    } \
  \
    task peek(output T obj, input int offset = 0) { \
@@ -240,38 +250,77 @@ public:          int     m_int_array [1:32];
     * Constrain m_local_int to a small value.
     *
     */
-   constraint small_int ;
+   constraint small_int() { m_local_int <= 0d6;}
 
    /**
     * Word Align Constraint.
     * Constrain m_public_bitvector to word align
     *
     */
-   constraint word_align ;
+   constraint word_align() { 
+       // This is a comment
+      m_public_bitvector[2] == 0d0;
+   }
 
-
-
+   /**
+    * Extern Constraint.
+    * Constraint body defined extern.
+    *
+    */
+   constraint extern_constraint();
    
    /**
     * Cov1 Coverage Group.
     * Covers m_alpha and m_mn
     *
     */
-   covergroup cov1;
-
-
-
+    covergroup cov1() {
+      coverpoint m_alpha;
+      coverpoint m_mn;
+   }
 
    /**
     * Cov2 Coverage Group.
     * Covers m_protected_bit and m_protected_int on m_protected_bit event.
     *
     */
-   covergroup cov2 ;
+    covergroup cov2 () {
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   }
 
+   /**
+    * Cov3 Coverage Group with args.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+    covergroup cov3 (int arg1, int arg2) {
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   }
 
+   /**
+    * Cov4 Coverage Group with args on 2 lines.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+    covergroup cov4 (int arg1,
+                    int arg2) {
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   }
 
-   
+   /**
+    * Cov5 Coverage Group with args on with sampling.
+    * Covers m_protected_bit and m_protected_int on m_protected_bit event.
+    *
+    */
+    covergroup cov5 (int arg1,
+                    int arg2)  {
+      coverpoint m_protected_bit;
+      coverpoint m_protected_int;
+   }
+
    /**
     *  Constructor.
     *  Class Constructor<br>
@@ -389,6 +438,10 @@ public:
     }
 
 };
+
+constraint test_class_basic::extern_constraint() { 
+   m_local_int == m_protected_int;
+}
 
  // Extern Function show()
  // Test string in quotes
@@ -677,11 +730,21 @@ template  <typename T=int,
    bit m_mybit;
 };
 
+/**
+ * My Class11.
+ * extends template class...
+ */
+class myclass11 : public mytemplateclass10 <foo, 5, boo>  { public: 
+   int m_myint;
+};
+
+
 template  <typename ABC=data, typename DEF=data2> class mytemplateselectclass  
 #ifdef DEFBASE
   : public DEFBASE
 #endif
  { public: 
+   int m_myint;
 };
 
 class myselectclass
@@ -689,9 +752,11 @@ class myselectclass
   : public DEFBASE
 #endif
  { public: 
+   int m_myint;
 };
 
 template  <typename f = null, typename g = z, typename h = x> class abc : public def <f>  { public: 
+   int m_myint;
 };
 
 #endif
