@@ -114,9 +114,9 @@ foreach (@infile) {
    #   - BUT - we want to save the comment if it was an inline or doxygen comment
    #           so we'll put back the comment at the end
    if (!$blockcomment) {
-      if (/(\/\/.*)/) {
+      if (/\/\/(.*)/) {
          $inline_comment = $1;
-         s/\/\/.*//;  # strip comment off of the line
+         s/\/\/.*/\/\//;  # strip comment off of the line - but leave the comment marker
       }
       elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
@@ -165,24 +165,6 @@ foreach (@infile) {
          $doxyblockcomment = 0;
       }
       print;
-      next;  # skip to next line of file
-   }
-
-   # Detect and Skip Full Line Single-Line Comments
-   #  Looking for:
-   #   // comment
-   # Current Strategy:
-   #   - skip all commented lines
-   #   - entire line is commented so skip to next line of file
-   if (/^\s*\/\//) {
-      # Doxygen Line Comments
-      #  Looking for:
-      #    ///
-      # We can do doxygen preprocessing if needed here
-      if (/^\s*\/\/\//) {
-         # Nothing to do here right now
-      }
-      print; # print the comment as is
       next;  # skip to next line of file
    }
 
@@ -875,7 +857,7 @@ foreach (@infile) {
 
    # Return the Inline Comment to the End of the Line
    if ($inline_comment ne "") {
-      s/$/ $inline_comment/;
+      s/\/\//\/\/$inline_comment/;
       $inline_comment = "";
    }
    if ($inline_block_comment ne "") {
