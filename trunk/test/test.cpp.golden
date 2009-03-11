@@ -1,20 +1,20 @@
- // $Id_deleteme$
- //----------------------------------------------------------------------------
- //    This program is free software: you can redistribute it and/or modify
- //    it under the terms of the GNU General Public License as published by
- //    the Free Software Foundation, either version 3 of the License, or
- //    (at your option) any later version.
- //
- //    This program is distributed in the hope that it will be useful,
- //    but WITHOUT ANY WARRANTY; without even the implied warranty of
- //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- //    GNU General Public License for more details.
- //
- //    You should have received a copy of the GNU General Public License
- //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- //
- //----------------------------------------------------------------------------
- // NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
+// $Id_deleteme$
+//----------------------------------------------------------------------------
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//----------------------------------------------------------------------------
+// NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
 /**
  * Test.
  * This file is a test of the doxygen filter script.<br>
@@ -59,37 +59,37 @@
 #include PUTINQUOTES(MYOTHERFILE)
 
 
- // DPI Import
+// DPI Import
  int dpi_method1(input string str1, input string regex) {}
  string dpi_method2() {}
  string dpi_method3() {}
  string dpi_method4(int n) {}
  void myInit() {}
- // from standard math library
+// from standard math library
  real sin(real) {}
- // from standard C library: memory management
- chandle malloc(int size) {} // standard C function
- void free(chandle ptr) {} // standard C function
- // abstract data structure: queue
+// from standard C library: memory management
+ chandle malloc(int size); // standard C function
+ void free(chandle ptr); // standard C function
+// abstract data structure: queue
  chandle newQueue(input string name_of_queue) {}
- // Note the following import uses the same foreign function for
- // implementation as the prior import, but has different SystemVerilog name
- // and provides a default value for the argument.
+// Note the following import uses the same foreign function for
+// implementation as the prior import, but has different SystemVerilog name
+// and provides a default value for the argument.
  chandle newAnonQueue(input string s=null) {}
  chandle newElem(bit <15:0> ) {}
  void enqueue(chandle queue, chandle elem) {}
  chandle dequeue(chandle queue) {}
- // miscellanea
+// miscellanea
  bit <15:0>  getStimulus() {}
  void processTransaction(chandle elem,
                                        output logic <64:1>  arr [0:63]) {}
 task checkResults(input string s, bit <511:0>  packet) {}
 
 
- // DPI Export
+// DPI Export
 
 
- // Macros
+// Macros
 #define MYDEFINE mydefine
 #ifdef MYDEFINE
 #define MYDEFINE2 mydefine2
@@ -97,11 +97,11 @@ task checkResults(input string s, bit <511:0>  packet) {}
 #undef MYDEFINE2
 #endif
 
- // More Macros
+// More Macros
 #define foo(f) f##_suffix
 #define msg(x,y) "x: \"y\""
 
- // Multiline Macros (from VMM)
+// Multiline Macros (from VMM)
 #ifndef __FILE__
 #define __FILE__ ""
 #endif
@@ -114,7 +114,7 @@ do \
    /* synopsys translate_off */ \
    if (log.start_msg(vmm_log::FAILURE_TYP, vmm_log::WARNING_SEV, __FILE__, __LINE__)) { \
       void(log.text(msg)); \
-      log.end_msg(); \
+      log.end_msg(); // a comment in a macro \
    } \
    /* synopsys translate_on */ \
 while(0)
@@ -139,7 +139,7 @@ do \
    /* synopsys translate_on */ \
 while (0)
 
- // Another Mulitline Macro (from VMM)
+// Another Mulitline Macro (from VMM)
 #define vmm_channel(T) \
 class vmm_channel_(T) : public vmm_channel { public:  \
  \
@@ -222,28 +222,28 @@ class vmm_channel_(T) : public vmm_channel { public:  \
  */
 class test_class_basic { public: 
 
-    // Test Member Access Specifiers
-private:     rand int     m_local_int;       ///< Private Int
-protected:     rand int m_protected_int;   ///< Protected Int
-    rand bit m_protected_bit;   ///< Protected Bit
-public:          event   m_public_event;    ///< Public Event
-private:     event   m_local_event;     ///< Private Event
+   // Test Member Access Specifiers
+private:     rand int     m_local_int;      ///< Private Int
+protected:     rand int m_protected_int;  ///< Protected Int
+    rand bit m_protected_bit;  ///< Protected Bit
+public:          event   m_public_event;   ///< Public Event
+private:     event   m_local_event;    ///< Private Event
 public:          int     m_int_array [1:32];
-    // Test bitvector brace conversion
-         rand bit <31:0>  m_public_bitvector;  ///< Public Bit Vector
-    // Test enum typedef
-   typedef enum {A,  ///< A State
-                  B,  ///< B State
-                  C,  ///< C State
-                  D   ///< D State
-                 } alpha_enum_t;   ///< Alpha State Enum Type
+   // Test bitvector brace conversion
+         rand bit <31:0>  m_public_bitvector; ///< Public Bit Vector
+   // Test enum typedef
+   typedef enum {A, ///< A State
+                  B, ///< B State
+                  C, ///< C State
+                  D  ///< D State
+                 } alpha_enum_t;  ///< Alpha State Enum Type
    
-   typedef enum { M,  ///< M State
-                            N   ///< N State
-                            } mn_enum_t;  ///< Bit State Enum Type
+   typedef enum { M, ///< M State
+                            N  ///< N State
+                            } mn_enum_t; ///< Bit State Enum Type
 
-   alpha_enum_t m_alpha;  ///< Alpha State
-   mn_enum_t    m_mn;     ///< MN State
+   alpha_enum_t m_alpha; ///< Alpha State
+   mn_enum_t    m_mn;    ///< MN State
 
    /**
     * Small Int Constraint.
@@ -258,7 +258,7 @@ public:          int     m_int_array [1:32];
     *
     */
    constraint word_align() { 
-       // This is a comment
+      // This is a comment
       m_public_bitvector[2] == 0d0;
    }
 
@@ -443,8 +443,8 @@ constraint test_class_basic::extern_constraint() {
    m_local_int == m_protected_int;
 }
 
- // Extern Function show()
- // Test string in quotes
+// Extern Function show()
+// Test string in quotes
  void test_class_basic::myexternfunction() {
    $display("test::show()");
    $display("m_local_int %0d", m_local_int);
@@ -456,7 +456,7 @@ constraint test_class_basic::extern_constraint() {
 }
 
  void test_class_basic::myprotectedexternfunction() {
-    // Cast from bit to int
+   // Cast from bit to int
    int myint;
    bit <7:0>  mybitvector;
 

@@ -114,7 +114,7 @@ do \
    /* synopsys translate_off */ \
    if (log.start_msg(vmm_log::FAILURE_TYP, vmm_log::WARNING_SEV, `__FILE__, `__LINE__)) begin \
       void'(log.text(msg)); \
-      log.end_msg(); \
+      log.end_msg(); // a comment in a macro \
    end \
    /* synopsys translate_on */ \
 while(0)
