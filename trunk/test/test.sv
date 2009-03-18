@@ -243,7 +243,10 @@ class test_class_basic;
                             } mn_enum_t; ///< Bit State Enum Type
 
    alpha_enum_t m_alpha; ///< Alpha State
-   mn_enum_t    m_mn;    ///< MN State
+	`ifdef FOO
+   local mn_enum_t    m_mn;    ///< MN State
+	`endif
+	bit    m_public_var; ///< A public variable
 
    /**
     * Small Int Constraint.
