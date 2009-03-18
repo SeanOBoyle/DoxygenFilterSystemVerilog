@@ -243,7 +243,10 @@ public:          int     m_int_array [1:32];
                             } mn_enum_t; ///< Bit State Enum Type
 
    alpha_enum_t m_alpha; ///< Alpha State
-   mn_enum_t    m_mn;    ///< MN State
+	#ifdef FOO
+private:     mn_enum_t    m_mn;    ///< MN State
+	#endif
+public: 	bit    m_public_var; ///< A public variable
 
    /**
     * Small Int Constraint.
