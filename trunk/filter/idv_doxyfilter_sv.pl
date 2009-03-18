@@ -59,6 +59,7 @@ my $blockcomment = 0;
 my $doxyblockcomment = 0;
 my $str_back = "";
 my $multiline_macro = 0;
+my $ifdef_start = 0;
 my $inline_comment = "";
 my $inline_block_comment = "";
 my $isdpi = 0;
@@ -676,7 +677,8 @@ foreach (@infile) {
    #   - if we're in a class body restick the public marker after SV changes to local or protected
    #   - to keep the line number references correct we need to put the public on the same line
    #   - if we're not in the body of a method then we can mark public
-   if ($class == 1 && $function_start == 0) {
+	#   - if the line is a # macro then skip the print
+   if ($class == 1 && $function_start == 0 && !(/^\s*\#/)) {
       if (/\blocal\s+\b/) {
          s/\blocal\b//;
          if ($access_specifier ne "private") {
