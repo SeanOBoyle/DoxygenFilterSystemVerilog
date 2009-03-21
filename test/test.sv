@@ -522,6 +522,20 @@ module mymodule2(int myint,
 endmodule: mymodule2
 
 /**
+ * MyModule3 Module Block.
+ * A module block with inputs/outputs declared over multiple lines - starting on the next line
+ */
+module mymodule3
+(
+int myint,
+bit mybit
+);
+   initial begin
+      $display("Hello World");
+   end
+endmodule
+
+/**
  * Bus interface Block.
  * An interface with no ports.
  */
