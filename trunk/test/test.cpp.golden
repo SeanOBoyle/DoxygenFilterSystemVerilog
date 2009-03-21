@@ -522,6 +522,20 @@ constraint test_class_basic::extern_constraint() {
 }
 
 /**
+ * MyModule3 Module Block.
+ * A module block with inputs/outputs declared over multiple lines - starting on the next line
+ */
+/** @ingroup SVmodule */module mymodule3
+(
+int myint,
+bit mybit
+) {
+    {
+      $display("Hello World");
+   }
+}
+
+/**
  * Bus interface Block.
  * An interface with no ports.
  */

@@ -399,7 +399,7 @@ foreach (@infile) {
    #                 ...) foo (...);
    # Current Strategy:
    #   - make look like C++ function that returns type interface
-   if (/\b(interface|module)\s+/) {
+   if (s/\b(interface|module)(\s+)/\/** \@ingroup SV$1 *\/$1$2/) {
 
       if ($1 eq "interface") {
          $moduleinterface = 1;
@@ -409,17 +409,17 @@ foreach (@infile) {
       }
 
       $interface_start = 1;
-      if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/\/** \@ingroup SV$1 *\/$1 $2($3)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/\/** \@ingroup SV$1 *\/$1 $2($3/) {}
+      if (s/\b(interface|module)\s+(\w+)\s*?\((.*?)\)/$1 $2($3)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\((.*?)/$1 $2($3/) {}
       elsif (/\b(interface|module)\s+(\w+)\s*\(/) {
          $interface_start = 1;
          $interface_name = $1;
       }
-      else {s/\b(interface|module)\s+(\w+);/\/** \@ingroup SV$1 *\/$1 $2();/;}
+      else {s/\b(interface|module)\s+(\w+);/$1 $2();/;}
    
-      if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/\/** \@ingroup SV$1 *\/template <$3> $1 $2($4/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/\/** \@ingroup SV$1 *\/template </) {
+      if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/template </) {
          $interface_start = 1;
          $interface_name = $1." ".$2;
          $interface_template_start = 1;
