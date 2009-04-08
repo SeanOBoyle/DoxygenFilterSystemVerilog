@@ -52,10 +52,10 @@ make docs PROJ_NUM=1.62c DOXY_VER=2.2.2
 cd -
 cd ../../../SVtimersDocs/tags/1.3.1/
 echo ""
-echo "Making Timers 1.0.0 Docs"
+echo "Making Timers 1.1.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.2
+make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.2
 cd -
 # Move to Upload Folder
 rm -rf upload
