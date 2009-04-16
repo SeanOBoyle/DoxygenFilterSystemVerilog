@@ -216,7 +216,15 @@ endclass
 `define TLM_FIFO_FUNCTION_ERROR2 "fifo channel \
                              function not implemented \
                              yes we have no bananas \
-                             today"
+                             today function" things
+
+`define TLM_FIFO_FUNCTION_ERROR3 "fifo channel \
+\
+                             function not implemented \
+                             yes we have no bananas \
+                             today function" things
+
+
 
 /**
  *  Test Class - Basic.

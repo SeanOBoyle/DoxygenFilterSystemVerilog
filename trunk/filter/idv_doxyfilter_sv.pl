@@ -191,19 +191,20 @@ foreach (@infile) {
    # String with a line continuation in the middle
    elsif ($str_line_continue) { # middle of string
       #print STDERR "in string\n";
-      if (s/(.*)"/"/) { # end of string
+      if (s/(.*)"/lcend"/) { # end of string
          $str_back_lc_end = $1;
          #print STDERR "end of string ".$str_back_lc_end." \n";
+         #print STDERR $_."\n";
       }
-      elsif (s/(.*)\\/\\/) { # middle of string
+      elsif (s/(.*)\\/lcmiddle\\/) { # middle of string
          $str_back_lc_mid = $1;
       }
       else {
-         die "FATAL: bad string line continuation"
+         die "FATAL: bad string line continuation at file line ".$infile_line;
       }
 
    }
-   elsif (s/"(.*)\\$/"\\/) { # start of string
+   elsif (s/"(.*)\\$/"lcstart\\/) { # start of string
       $str_back_lc_start = $1;
       $str_line_continue = 1;
    }
@@ -306,7 +307,7 @@ foreach (@infile) {
       if (s/"(.*)"/""/g) {
          $str_back = $1;
       }
-      if (s/"(.*)\\$/"\\/) { # start of string
+      if (s/"(.*)\\$/"lcstart\\/) { # start of string
          $str_back_lc_start = $1;
          $str_line_continue = 1;
       }
@@ -887,24 +888,22 @@ foreach (@infile) {
    }
    if ($str_line_continue) {
       #print STDERR "still in string\n";
-      if ($str_back_lc_start ne "") {
+      #print STDERR $_;
+      if (s/"lcstart\\/"$str_back_lc_start\\/) {
          #print STDERR "start!".$str_back_lc_start."\n";
-         s/"\\/"$str_back_lc_start\\/;
          $str_back_lc_start = "";
       }
-      elsif ($str_back_lc_mid ne "") {
+      elsif (s/lcmiddle\\/$str_back_lc_mid\\/) {
          #print STDERR "mid!".$str_back_lc_mid."\n";
-         s/\\/$str_back_lc_mid\\/;
          $str_back_lc_mid = "";
       }
-      elsif ($str_back_lc_end ne "") {
+      elsif (s/lcend"/$str_back_lc_end"/) {
          #print STDERR "END!".$str_back_lc_end."\n";
-         s/"/$str_back_lc_end"/;
          $str_back_lc_end = "";
          $str_line_continue = 0;
       }
       else {
-         die "FATAL: string line continue";
+         die "FATAL: string line continue at file line ".$infile_line;
       }
    }
 
