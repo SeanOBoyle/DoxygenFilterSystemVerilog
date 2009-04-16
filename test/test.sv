@@ -211,6 +211,11 @@ class `vmm_channel_(T) extends vmm_channel; \
  \
 endclass
 
+#define TLM_FIFO_TASK_ERROR "fifo channel task not implemented"
+#define TLM_FIFO_FUNCTION_ERROR "fifo channel \
+                             function not implemented \
+                             yes we have no bananas \
+                             today"
 
 /**
  *  Test Class - Basic.
@@ -237,7 +242,7 @@ class test_class_basic;
                   C, ///< C State
                   D  ///< D State
                  } alpha_enum_t;  ///< Alpha State Enum Type
-   
+
    typedef enum bit [7:0] { M, ///< M State
                             N  ///< N State
                             } mn_enum_t; ///< Bit State Enum Type
@@ -271,7 +276,7 @@ class test_class_basic;
     *
     */
    constraint extern_constraint;
-   
+
    /**
     * Cov1 Coverage Group.
     * Covers m_alpha and m_mn
@@ -369,7 +374,7 @@ class test_class_basic;
    virtual task mypublicvirtualfunction();
       $display("This is public");
    endtask
-   
+
    /**
     *  Pure Virtual Task.
     *  Test pure virtual specifier
@@ -378,7 +383,7 @@ class test_class_basic;
     *
     */
    pure virtual task mypurevirtualtask();
-   
+
    /**
     *  Protected Task.
     *  Test method access specifier
@@ -389,7 +394,7 @@ class test_class_basic;
    protected task myprotectedfunction();
       $display("This is protected");
    endtask
-   
+
    /**
     *  Protected Task.
     *  Test method access specifier
@@ -465,7 +470,7 @@ function void test_class_basic::myprotectedexternfunction();
 
    myint = int'(m_mn);
    mybitvector = bit[7:0]'(m_alpha);
-   
+
 endfunction: myprotectedexternfunction
 
 /**
@@ -474,7 +479,7 @@ endfunction: myprotectedexternfunction
  */
 program myprogram1;
   initial begin
-     int myint = 5; 
+     int myint = 5;
      int myint2 = 6;
      $display("Hello World");
      case (myint)
@@ -585,7 +590,7 @@ endinterface
  * BusD interface Block.
  * A parameterized interface with two lines of IO
  */
-interface bus_D #(WIDTH=8) (input clk, 
+interface bus_D #(WIDTH=8) (input clk,
                             output foo);
       logic [WDTH-1:0] cmd;
       logic enable;

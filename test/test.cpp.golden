@@ -211,6 +211,11 @@ class vmm_channel_(T) : public vmm_channel { public:  \
  \
 };
 
+#define TLM_FIFO_TASK_ERROR "fifo channel task not implemented"
+#define TLM_FIFO_FUNCTION_ERROR "fifo channel \
+                             function not implemented \
+                             yes we have no bananas \
+                             today"
 
 /**
  *  Test Class - Basic.
@@ -237,7 +242,7 @@ public:          int     m_int_array [1:32];
                   C, ///< C State
                   D  ///< D State
                  } alpha_enum_t;  ///< Alpha State Enum Type
-   
+
    typedef enum { M, ///< M State
                             N  ///< N State
                             } mn_enum_t; ///< Bit State Enum Type
@@ -271,7 +276,7 @@ public: 	bit    m_public_var; ///< A public variable
     *
     */
    constraint extern_constraint();
-   
+
    /**
     * Cov1 Coverage Group.
     * Covers m_alpha and m_mn
@@ -369,7 +374,7 @@ public:
    virtual task mypublicvirtualfunction() {
       $display("This is public");
    }
-   
+
    /**
     *  Pure Virtual Task.
     *  Test pure virtual specifier
@@ -378,7 +383,7 @@ public:
     *
     */
    virtual task mypurevirtualtask() = 0;
-   
+
    /**
     *  Protected Task.
     *  Test method access specifier
@@ -389,7 +394,7 @@ public:
 protected:     task myprotectedfunction() {
       $display("This is protected");
    }
-public:    
+public: 
    /**
     *  Protected Task.
     *  Test method access specifier
@@ -465,7 +470,7 @@ constraint test_class_basic::extern_constraint() {
 
    myint = int(m_mn);
    mybitvector = bit <7:0> (m_alpha);
-   
+
 }
 
 /**
@@ -474,7 +479,7 @@ constraint test_class_basic::extern_constraint() {
  */
 /** @ingroup SVprogram */program myprogram1() {
    {
-     int myint = 5; 
+     int myint = 5;
      int myint2 = 6;
      $display("Hello World");
      case  (myint) { 
@@ -585,7 +590,7 @@ bit mybit
  * BusD interface Block.
  * A parameterized interface with two lines of IO
  */
-/** @ingroup SVinterface */template <WIDTH=8> interface bus_D(input clk, 
+/** @ingroup SVinterface */template <WIDTH=8> interface bus_D(input clk,
                             output foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
