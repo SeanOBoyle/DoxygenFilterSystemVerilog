@@ -58,6 +58,10 @@ use strict;
 my $blockcomment = 0;
 my $doxyblockcomment = 0;
 my $str_back = "";
+my $str_line_continue = 0;
+my $str_back_lc_start = "";
+my $str_back_lc_mid = "";
+my $str_back_lc_end = "";
 my $multiline_macro = 0;
 my $ifdef_start = 0;
 my $inline_comment = "";
@@ -184,10 +188,28 @@ foreach (@infile) {
    elsif (s/"(.*)"/""/g) {
       $str_back = $1;
    }
+   # String with a line continuation in the middle
+   elsif ($str_line_continue) { # middle of string
+      #print STDERR "in string\n";
+      if (s/(.*)"/"/) { # end of string
+         $str_back_lc_end = $1;
+         #print STDERR "end of string ".$str_back_lc_end." \n";
+      }
+      elsif (s/(.*)\\/\\/) { # middle of string
+         $str_back_lc_mid = $1;
+      }
+      else {
+         die "FATAL: bad string line continuation"
+      }
+
+   }
+   elsif (s/"(.*)\\$/"\\/) { # start of string
+      $str_back_lc_start = $1;
+      $str_line_continue = 1;
+   }
    else {
       $str_back = "";
    }
-
 
    #-----------------------------------------------------------------------------
    #
@@ -281,6 +303,9 @@ foreach (@infile) {
       s/`"/"/g;
       s/`\\/\\/g;
       s/`(\w)/$1/g;
+      if (s/"(.*)"/""/g) {
+         $str_back = $1;
+      }
       if (/\\\s*$/) {
          $multiline_macro = 1;
       }
@@ -416,7 +441,7 @@ foreach (@infile) {
          $interface_name = $1;
       }
       else {s/\b(interface|module)\s+(\w+);/$1 $2();/;}
-   
+
       if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
       elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
       elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/template </) {
@@ -644,7 +669,7 @@ foreach (@infile) {
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
-      
+
       if ($template_class == 1 && $template == 0 && $template_class_drop == 0) {
          if (s/(.*)>\s+extends\s+(.*)$/$1> class $classname extends $2/) {
             $template_class_drop = 1;
@@ -762,7 +787,7 @@ foreach (@infile) {
          if (s/;\s*$/ {}\n/) {
             $isdpi = 0;
             $function_start = 0;
-         }      
+         }
       }
       elsif (s/;/ {/) {
          $function = 1; # in a method body
@@ -855,6 +880,28 @@ foreach (@infile) {
    if ($str_back ne "") {
       s/""/"$str_back"/;
       $str_back = "";
+   }
+   if ($str_line_continue) {
+      #print STDERR "still in string\n";
+      if ($str_back_lc_start ne "") {
+         #print STDERR "start!".$str_back_lc_start."\n";
+         s/"\\/"$str_back_lc_start\\/;
+         $str_back_lc_start = "";
+      }
+      elsif ($str_back_lc_mid ne "") {
+         #print STDERR "mid!".$str_back_lc_mid."\n";
+         s/\\/$str_back_lc_mid\\/;
+         $str_back_lc_mid = "";
+      }
+      elsif ($str_back_lc_end ne "") {
+         #print STDERR "END!".$str_back_lc_end."\n";
+         s/"/$str_back_lc_end"/;
+         $str_back_lc_end = "";
+         $str_line_continue = 0;
+      }
+      else {
+         die "FATAL: string line continue";
+      }
    }
 
    # Return the Inline Comment to the End of the Line
