@@ -115,6 +115,7 @@ do \
    if (log.start_msg(vmm_log::FAILURE_TYP, vmm_log::WARNING_SEV, `__FILE__, `__LINE__)) begin \
       void'(log.text(msg)); \
       log.end_msg(); // a comment in a macro \
+      something("with some quotes and a keyword end") \
    end \
    /* synopsys translate_on */ \
 while(0)
