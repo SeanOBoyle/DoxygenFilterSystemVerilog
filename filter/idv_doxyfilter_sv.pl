@@ -306,6 +306,10 @@ foreach (@infile) {
       if (s/"(.*)"/""/g) {
          $str_back = $1;
       }
+      if (s/"(.*)\\$/"\\/) { # start of string
+         $str_back_lc_start = $1;
+         $str_line_continue = 1;
+      }
       if (/\\\s*$/) {
          $multiline_macro = 1;
       }

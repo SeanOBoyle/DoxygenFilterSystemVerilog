@@ -212,7 +212,8 @@ class vmm_channel_(T) : public vmm_channel { public:  \
 };
 
 #define TLM_FIFO_TASK_ERROR "fifo channel task not implemented"
-#define TLM_FIFO_FUNCTION_ERROR "fifo channel \
+#define TLM_FIFO_FUNCTION_ERROR "fifo channel function not implemented"
+#define TLM_FIFO_FUNCTION_ERROR2 "fifo channel \
                              function not implemented \
                              yes we have no bananas \
                              today"
