@@ -50,6 +50,7 @@ sleep 5
 make clean
 make docs PROJ_NUM=1.62c DOXY_VER=2.2.3
 cd -
+cd ../../../SVtimersDocs/tags/1.3.1/
 echo ""
 echo "Making Timers 1.1.1 Docs"
 sleep 5
