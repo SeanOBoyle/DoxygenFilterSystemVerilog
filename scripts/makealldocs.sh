@@ -4,65 +4,65 @@ echo ""
 echo "Making OVM 1.0.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.4
 echo ""
 echo "Making OVM 1.0.1 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.1 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.0.1 DOXY_VER=2.2.4
 echo ""
 echo "Making OVM 1.1.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.4
 echo ""
 echo "Making OVM 2.0.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=2.0.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=2.0.0 DOXY_VER=2.2.4
 echo ""
 echo "Making OVM 2.0.1 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=2.0.1 DOXY_VER=2.2.3
+make docs PROJ_NUM=2.0.1 DOXY_VER=2.2.4
 cd -
 cd ../../../VMMdocs/tags/1.5.1/
 echo ""
 echo "Making VMM 1.0.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.4
 echo ""
 echo "Making VMM 1.0.1 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.1 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.0.1 DOXY_VER=2.2.4
 echo ""
 echo "Making VMM 1.1.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.4
 cd -
 cd ../../../TealTrussDocs/tags/1.5.1/
 echo ""
 echo "Making Teal Truss 1.62c Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.62c DOXY_VER=2.2.3
+make docs PROJ_NUM=1.62c DOXY_VER=2.2.4
 cd -
 cd ../../../SVtimersDocs/tags/1.3.1/
 echo ""
 echo "Making Timers 1.1.1 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.1.1 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.1.1 DOXY_VER=2.2.4
 cd -
 cd ../../../SVtimersDocs/tags/1.3.1/
 echo ""
 echo "Making Timers 1.0.0 Docs"
 sleep 5
 make clean
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.3
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.2.4
 cd -
 
 # Move to Upload Folder
