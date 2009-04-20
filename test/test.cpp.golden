@@ -668,7 +668,7 @@ template  <typename T=int> class mytemplateclass : public test_class_basic { pub
  * type T=custom
  * extends mytemplateclass#(bit)
  */
-template  <typename T=custom> class mytemplateclass2 : public mytemplateclass<bit>  { public: 
+template  <typename T=custom> class mytemplateclass2 : public mytemplateclass <bit>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -678,7 +678,7 @@ template  <typename T=custom> class mytemplateclass2 : public mytemplateclass<bi
  * type T=int, type B=bit
  * extends mytemplateclass#(bit)
  */
-template  <typename T=int, typename B=bit> class mytemplateclass3 : public mytemplateclass<bit>  { public: 
+template  <typename T=int, typename B=bit> class mytemplateclass3 : public mytemplateclass <bit>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -726,12 +726,12 @@ template  <typename T=int, int B=3> class mytemplateclass7 : public mytemplatecl
 /**
  * My Template Class8.
  * type T=int, int B=3, type C=mine
- * extends mytemplateclass4#(bit, 5)
+ * extends mytemplateclass6#(bit, 5)
  */
 template  <typename T=int,
-                         int B=3,
-                         typename C=mine> class mytemplateclass8  
-                         : public mytemplateclass6<bit,
+                        int B=3,
+                        typename C=mine> class mytemplateclass8  
+                       : public mytemplateclass6 <bit,
                                                    5>  { public: 
    int m_myint;
    bit m_mybit;
@@ -745,7 +745,7 @@ template  <typename T=int,
 template  <typename T=int,
                          int B=3,
                          typename C=mine> class mytemplateclass9  
-                         : public mytemplateclass6<bit,5>  { public: 
+                         : public mytemplateclass6 <bit,5>  { public: 
    int m_myint;
    bit m_mybit;
 };
@@ -770,6 +770,20 @@ class myclass11 : public mytemplateclass10 <foo, 5, boo>  { public:
    int m_myint;
 };
 
+/**
+ * My Template Class12.
+ * type T=int, int B=3, type C=mine
+ * extends mytemplateclass6#(bit, 5)
+ */
+template 
+   <typename T=int,
+     int B=3,
+     typename C=mine> class mytemplateclass12  
+   : public mytemplateclass6 <bit,
+                             5>  { public: 
+   int m_myint;
+   bit m_mybit;
+};
 
 template  <typename ABC=data, typename DEF=data2> class mytemplateselectclass  
 #ifdef DEFBASE
