@@ -622,6 +622,9 @@ foreach (@infile) {
    #
    s/\btype REQ=int,RSP=int/typename REQ=int, typename RSP=int/; # HACK: support for OVM weirdness
 
+   # Apparently a space between the class name and the parameterized list is not required - so let's add one - since that's what the rest of this filter expects
+   s/(\w)(\#\()/$1 $2/;
+
    # Parameterized Class Usage
    #
    # Current Strategy:
@@ -670,20 +673,25 @@ foreach (@infile) {
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
-      elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) {
+      elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
 
       if ($template_class == 1 && $template == 0 && $template_class_drop == 0) {
+         #print STDERR "Found ".$classname." at line $infile_line\n";
          if (s/(.*)>\s+extends\s+(.*)$/$1> class $classname extends $2/) {
-            $template_class_drop = 1;
+            $template_class_drop = 1; # dropped class name
          }
          elsif (s/(.*)>(.*)$/$1> class $classname $2/) {
-            $template_class_drop = 1;
+            $template_class_drop = 1; #dropped class name
          }
-         else {}
-         $template_class = 0;
+         elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
+            $template_class = 1;
+         }
+         else {
+            $template_class = 0;
+			}
       }
 
    }

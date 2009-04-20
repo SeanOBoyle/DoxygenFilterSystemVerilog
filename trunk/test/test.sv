@@ -726,12 +726,12 @@ endclass
 /**
  * My Template Class8.
  * type T=int, int B=3, type C=mine
- * extends mytemplateclass4#(bit, 5)
+ * extends mytemplateclass6#(bit, 5)
  */
-class mytemplateclass8 #(type T=int,
-                         int B=3,
-                         type C=mine)
-                         extends mytemplateclass6#(bit,
+class mytemplateclass8#(type T=int,
+                        int B=3,
+                        type C=mine)
+                       extends mytemplateclass6#(bit,
                                                    5);
    int m_myint;
    bit m_mybit;
@@ -770,6 +770,20 @@ class myclass11 extends mytemplateclass10 #(foo, 5, boo);
    int m_myint;
 endclass
 
+/**
+ * My Template Class12.
+ * type T=int, int B=3, type C=mine
+ * extends mytemplateclass6#(bit, 5)
+ */
+class mytemplateclass12
+   #(type T=int,
+     int B=3,
+     type C=mine)
+   extends mytemplateclass6#(bit,
+                             5);
+   int m_myint;
+   bit m_mybit;
+endclass
 
 class mytemplateselectclass #(type ABC=data, type DEF=data2)
 `ifdef DEFBASE
