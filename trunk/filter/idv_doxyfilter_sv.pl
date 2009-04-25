@@ -62,6 +62,7 @@ my $str_line_continue = 0;
 my $str_back_lc_start = "";
 my $str_back_lc_mid = "";
 my $str_back_lc_end = "";
+my $macro_start = 0;
 my $multiline_macro = 0;
 my $ifdef_start = 0;
 my $inline_comment = "";
@@ -118,10 +119,13 @@ foreach (@infile) {
    #   - Don't want to filter the comment so we remove the comment
    #   - BUT - we want to save the comment if it was an inline or doxygen comment
    #           so we'll put back the comment at the end
+   #   - And - comments in macro - leave the line escape
    if (!$blockcomment) {
-      if (/\/\/(.*)/) {
+      if (s/\/\/(.*)\\/\/\/\\/) {
          $inline_comment = $1;
-         s/\/\/.*/\/\//;  # strip comment off of the line - but leave the comment marker
+      }
+      elsif (s/\/\/(.*)/\/\//) {
+         $inline_comment = $1;
       }
       elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
@@ -282,6 +286,7 @@ foreach (@infile) {
    #   - double tick (``) is replaced with ##
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
    #   - continue filtering the line
+   #   - skip over strings - including strings that continue over multiple lines
 
    # HACK - in OVM `define for _protected is protected
    s/`_protected/protected/;
@@ -291,13 +296,10 @@ foreach (@infile) {
    s/`VMM_HW_RTL_COMPONENT_START\b/interface/;
    # HACK: vmm preprocessor macro: VMM_HW_RTL_COMPONENT_END   endinterface
    s/`VMM_HW_RTL_COMPONENT_END\b/endinterface/;
-   # HACK: VMM_DATA_BASE_NEW_EXTERN_ARGS; VMM_DATA_NEW_ARGS; etc.
-   s/`VMM_.*?_ARGS//;
-   # HACK: vmm_channel(T) macro - make it look like the template version
-   s/`vmm_channel\s*\((\w+)\)/vmm_channel_typed <$1> $1_channel;/;
 
+   $macro_start = 0;
    if (/^\s*`/) {
-
+      $macro_start = 1;
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
       s/``/##/g;
       s/`"(\w+)`"/#$1/;
@@ -321,7 +323,7 @@ foreach (@infile) {
    # Looking for:
    #   Line Continuation (\) LF
    # Current Strategy:
-   #   - print the line as is; don't try to continue filtering the line
+   #   - continue filtering the line
    #   - the last line of the macro doesn't have an escape - so we keep track of this
    if ($multiline_macro) {
       s/``/##/g;
@@ -691,7 +693,7 @@ foreach (@infile) {
          }
          else {
             $template_class = 0;
-			}
+         }
       }
 
    }
@@ -715,7 +717,7 @@ foreach (@infile) {
    #   - if we're in a class body restick the public marker after SV changes to local or protected
    #   - to keep the line number references correct we need to put the public on the same line
    #   - if we're not in the body of a method then we can mark public
-	#   - if the line is a # macro then skip the print
+   #   - if the line is a # macro then skip the print
    if ($class == 1 && $function_start == 0 && !(/^\s*\#/)) {
       if (/\blocal\s+\b/) {
          s/\blocal\b//;
@@ -916,8 +918,16 @@ foreach (@infile) {
    }
 
    # Return the Inline Comment to the End of the Line
+   # NOTE: doxygen cannot handle an inline comment in a macro -- SV specifies that those comments should be ignored
    if ($inline_comment ne "") {
-      s/\/\//\/\/$inline_comment/;
+      #print STDERR "still - inline comment found at line $infile_line\n";
+      if ($macro_start || $multiline_macro) {
+         #print STDERR "Macro with inline comment found at line $infile_line\n";
+         s/\/\/\\/\/\*$inline_comment\*\/ \\/; # in macro - convert inline comment to inline block comment
+      }
+      else {
+         s/\/\//\/\/$inline_comment/;
+      }
       $inline_comment = "";
    }
    if ($inline_block_comment ne "") {
