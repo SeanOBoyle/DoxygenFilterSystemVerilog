@@ -43,7 +43,7 @@ sleep 5
 make clean
 make docs PROJ_NUM=1.1.0 DOXY_VER=2.2.5
 cd -
-cd ../../../TealTrussDocs/tags/1.5.2/
+cd ../../../TealTrussDocs/tags/1.5.1/
 echo ""
 echo "Making Teal Truss 1.62c Docs"
 sleep 5
@@ -71,6 +71,6 @@ mkdir upload
 cd upload
 mv ../../../../OVMdocs/tags/1.7.1/ovm-* .
 mv ../../../../VMMdocs/tags/1.5.2/vmm-* .
-mv ../../../../TealTrussDocs/tags/1.5.2/teal_truss-* .
+mv ../../../../TealTrussDocs/tags/1.5.1/teal_truss-* .
 mv ../../../../SVtimersDocs/tags/1.3.1/timers-* .
 
