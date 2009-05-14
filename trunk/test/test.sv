@@ -226,6 +226,110 @@ endclass
                              today function" things
 
 
+/**
+ * Include Package - collection of classes.
+ * This is my package - it has a collection of classes that are included with file inclusion
+ *
+ */
+package inclpack;
+
+   `include "test_incl.sv"
+
+endpackage: inclpack
+
+
+/**
+ * Foo Package - collection of classes.
+ * This is my package - it has a collection of classes
+ *
+ */
+package foopack;
+   /**
+    *  Test Class in foo package.
+    *  Just a basic class declaration in a class.<br>
+    *
+    *  @class foo_test_class
+    *
+    */
+   class foo_test_class;
+      int m_anint;
+   endclass: foo_test_class
+   /**
+    *  Test Class2 in foo package.
+    *  Just a basic class declaration in a class.<br>
+    *
+    *  @class foo_test_class2
+    *
+    */
+   class foo_test_class2;
+      int m_anint;
+   endclass: foo_test_class2
+
+endpackage: foopack
+
+/**
+ * Goo Package - collection of classes.
+ * This is my goo package - it has a collection of classes
+ * and it uses another package - foopack::*
+ *
+ */
+package goopack;
+   import foopack::*;
+   /**
+    *  Test Class in a Package.
+    *  Just a basic class declaration in a class.<br>
+    *
+    *  @class goo_test_class
+    *
+    */
+   class goo_test_class extends foo_test_class;
+      int m_anint;
+      foo_test_class2 m_ftc;
+   endclass: goo_test_class
+
+endpackage: goopack
+
+/**
+ * Moo Package - collection of classes.
+ * This is my moo package - it has a collection of classes
+ * and it uses another package's class directly: goopack::goo_test_class
+ *
+ */
+package moopack;
+   import goopack::goo_test_class;
+   /**
+    *  Test Class in a Package.
+    *  Just a basic class declaration in a class.<br>
+    *
+    *  @class moo_test_class
+    *
+    */
+   class moo_test_class extends goo_test_class;
+      int m_anint;
+   endclass: moo_test_class
+
+endpackage: moopack
+
+/**
+ * Doo Package - collection of classes.
+ * This is my doo package - it has a collection of classes
+ * and it uses another package: moopack
+ *
+ */
+package doopack;
+   import moopack;
+   /**
+    *  Test Class in a Package.
+    *  Just a basic class declaration in a class.<br>
+    *
+    *  @class doo_test_class
+    *
+    */
+   class doo_test_class extends moo_test_class;
+      int m_anint;
+   endclass: doo_test_class
+
+endpackage: doopack
 
 /**
  *  Test Class - Basic.
@@ -646,9 +750,9 @@ endclass
 
 /**
  * My Derived Class Package.
- * Extends foo::test_class_basic -- foo:: will be removed
+ * Extends foopack::foo_test_class
  */
-class myderivedclass_package extends foo::test_class_basic;
+class myderivedclass_package extends foopack::foo_test_class;
    int m_myint;
    bit m_mybit;
 endclass

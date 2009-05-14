@@ -25,10 +25,6 @@
 # Usage:        make docs -- make the documentation
 #               make clean -- cleanup - delete all generated files
 #
-#               To run from trunk:
-#               make docs TRUNK=1
-#               To run from tagged release area:
-#               make docs
 #
 # Original Author: Sean O'Boyle
 # Contact:         seanoboyle@intelligentdv.com
@@ -54,6 +50,8 @@ PATH_DOXYSCR = $(PATH_ROOT)
 PATH_HOME = $(HOME)
 PATH_PRJ = $(PATH_ROOT)
 DOXYGEN = doxygen
+BROWSER = firefox
+DOTEST = ./dotest.pl
 DOXYFILE_BASE = $(PATH_DOXYSCR)/doxyfile/Doxyfile.template
 DOXYFILE_SVDELT = $(PATH_DOXYSCR)/doxyfile/idv_doxyfile_sv.delta
 DOXYFILE_TMPLCONV = $(PATH_DOXYSCR)/scripts/idv_doxyfile_tmplconv.pl 
@@ -63,6 +61,16 @@ DOXYFILE_OUT = ./Doxyfile.output
 DOC_PATH = test_doc
 
 DOC = $(DOC_PATH)/index.html
+
+# Default Target - make docs
+default: docs
+
+# Run Doxygen Script Test
+test:
+	$(DOTEST)
+
+test_package: 
+	$(DOTEST) --package_mode
 
 # Create the Template SystemVerilog Doxyfile
 $(DOXYFILE_TMPL): $(DOXYFILE_TMPLCONV) $(DOXYFILE_BASE) $(DOXYFILE_SVDELT)
@@ -78,7 +86,11 @@ doxyfile : $(DOXYFILE_OUT)
 docs: $(DOXYFILE_OUT)
 	$(DOXYGEN) $(DOXYFILE_OUT)
 
-.PHONY :	docs clean doxyfile
+# Show the Documentation
+showdocs: 
+	$(BROWSER) $(DOC_PATH)/index.html
+
+.PHONY :	docs clean doxyfile showdocs
 
 # Clean the documentation
 clean:
