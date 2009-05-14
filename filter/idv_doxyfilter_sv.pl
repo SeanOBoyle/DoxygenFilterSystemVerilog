@@ -24,6 +24,25 @@
 #               This script was generated heuristically - so there will likely
 #               be new issues discovered.
 #
+# Usage:        Doxygen: In your doxyfile define the FILTER_PATTERN as:
+#                        *.sv=/path/to/filter/idv_doxyfilter_sv.pl *.svh=</path/to/filter/idv_doxyfilter_sv.pl
+#               External: On the command line
+#                        /path/to/filter/idv_doxyfilter_sv.pl [options] < myfile.sv > myfile.cpp
+#                        The myfile.cpp will be generated from the myfile.sv.
+#               Options: At this point there is only one option:
+#                       --package_mode - enables SV Package to CPP namespace conversion
+#                                        NOTE: this feature is not yet fully functional - the
+#                                              generated cpp is correct; but doxygen is confused
+#                                              by our typical:
+#                                                              package foo;
+#                                                                `include file.sv
+#                                                              endpackage: foo
+#                        NOTE: options in doxyfile FILTER_PATTERN are not allowed -- so if you'd like
+#                              to use an option create a wrapper script and call the wrapper from
+#                              the doxyfile. An example shell script is found in the test/dofilter.sh path.
+#
+#
+#
 # NOTE:         Search for TODO and HACK notations in-line
 # NOTE:         HACK items are typically due to either:
 #                   1) preprocessor macro used to define an SV keyword
@@ -54,6 +73,7 @@
 #-----------------------------------------------------------------------------
 
 use strict;
+use Getopt::Long;
 
 my $blockcomment = 0;
 my $doxyblockcomment = 0;
@@ -95,12 +115,20 @@ my $moduleinterface = 0;
 my $moduleprogram = 0;
 my $modulemodule = 0;
 
+# Get command line options
+my $package_mode = '';
+GetOptions ('package_mode' => \$package_mode # experimental feature - add support for SV packages -- make look like C++ namespace
+           );
+
 my @infile = <>;  # slurp from STDIN
 my $infile_line = 0;
 # Process the SV File Line-by-Line
 foreach (@infile) {
    $inline_comment = "";
    $infile_line++;
+
+   # Fix DOS Files
+   s/\r//g;
 
    #-----------------------------------------------------------------------------
    #
@@ -557,21 +585,32 @@ foreach (@infile) {
    #s/\bref\s+(\w+)/$1&/;
 
    # Packages
-   # An SV package is very similar to a C++ namespace; let's see if I can get this to work...
+   # An SV package is very similar to a C++ namespace;
    # Looking for:
    #   - package mypackage;
+   #   - import mypackage;
+   #   - import mypackage::*;
+   #   - import mypackage::foo;
    # Current Strategy:
    #   - make it look like a C++ namespace
-   # TODO: uncomment this section once I can figure out how to get it working properly
-   #       for now having everything in the global space looks better
-#    if (/\bpackage\b/) {
-#       s/\bpackage\b(.*?);/namespace $1 {/;
-#    }
-#    s/\bendpackage\s*:\s*\S+/}/;
-#    s/\bendpackage\b/}/;
-#    s/\bimport\s+(\w+)::(.*)?;/using namespace $1;/;
-   # HACK: since I'm ignoring packages everything is in the global namespace; so can't extend from a specific package
-   s/extends (\w+)::/extends /;
+   if ($package_mode) { # Optional because doxygen doesn't like how we typically do packages in SV (with `include)
+      s/\bpackage\b(.*?);/namespace $1 {/;
+      s/\bendpackage\s*:\s*\S+/}/;
+      s/\bendpackage\b/}/;
+      s/\bimport\s+(\w+)::\*\s*;/using namespace $1;/;
+      s/\bimport\s+(\w+)::(.*)\s*;/using $1::$2;/;
+	   s/\bimport\s+(\w+)\s*;/using namespace $1;/;
+   }
+   else {
+#       s/\bpackage\b(.*?);//;
+#       s/\bendpackage\s*:\s*\S+//;
+#       s/\bendpackage\b//;
+#       s/\bimport\s+(\w+)::\*\s*;//;
+#       s/\bimport\s+(\w+)::(.*)\s*;//;
+#       s/\bimport\s+(\w+)\s*;//;
+      s/extends\s+(\w+)::(\w+)/extends $2/;
+   }
+
 
    # Case Statement
    # SV case looks exactly like C++ case except that C++ case opens with {
