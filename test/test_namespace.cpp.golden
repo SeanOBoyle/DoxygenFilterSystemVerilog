@@ -231,11 +231,11 @@ class vmm_channel_(T) : public vmm_channel { public:  \
  * This is my package - it has a collection of classes that are included with file inclusion
  *
  */
-package inclpack;
+namespace  inclpack {
 
    #include "test_incl.sv"
 
-endpackage: inclpack
+}
 
 
 /**
@@ -243,7 +243,7 @@ endpackage: inclpack
  * This is my package - it has a collection of classes
  *
  */
-package foopack;
+namespace  foopack {
    /**
     *  Test Class in foo package.
     *  Just a basic class declaration in a class.<br>
@@ -265,7 +265,7 @@ package foopack;
       int m_anint;
    };
 
-endpackage: foopack
+}
 
 /**
  * Goo Package - collection of classes.
@@ -273,8 +273,8 @@ endpackage: foopack
  * and it uses another package - foopack::*
  *
  */
-package goopack;
-   import foopack::*;
+namespace  goopack {
+   using namespace foopack;
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -287,7 +287,7 @@ package goopack;
       foo_test_class2 m_ftc;
    };
 
-endpackage: goopack
+}
 
 /**
  * Moo Package - collection of classes.
@@ -295,8 +295,8 @@ endpackage: goopack
  * and it uses another package's class directly: goopack::goo_test_class
  *
  */
-package moopack;
-   import goopack::goo_test_class;
+namespace  moopack {
+   using goopack::goo_test_class;
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -308,7 +308,7 @@ package moopack;
       int m_anint;
    };
 
-endpackage: moopack
+}
 
 /**
  * Doo Package - collection of classes.
@@ -316,8 +316,8 @@ endpackage: moopack
  * and it uses another package: moopack
  *
  */
-package doopack;
-   import moopack;
+namespace  doopack {
+   using namespace moopack;
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -329,7 +329,7 @@ package doopack;
       int m_anint;
    };
 
-endpackage: doopack
+}
 
 /**
  *  Test Class - Basic.
@@ -752,7 +752,7 @@ class myderivedclass : public test_class_basic { public:
  * My Derived Class Package.
  * Extends foopack::foo_test_class
  */
-class myderivedclass_package : public foo_test_class { public: 
+class myderivedclass_package : public foopack::foo_test_class { public: 
    int m_myint;
    bit m_mybit;
 };
