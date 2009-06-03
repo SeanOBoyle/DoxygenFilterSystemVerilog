@@ -65,7 +65,7 @@ cd -
 mv ../../../TealTrussDocs/tags/1.6.0/teal_truss-* upload/.
 
 # Make SV Timers Docs
-cd ../../../SVtimersDocs/tags/1.5.0/
+cd ../../../SVtimersDocs/tags/1.6.0/
 echo ""
 echo "Making Timers 1.2.0 Docs"
 sleep 5
@@ -82,7 +82,7 @@ sleep 5
 make clean PROJ_NUM=1.0.0 DOXY_VER=2.3.0
 make docs PROJ_NUM=1.0.0 DOXY_VER=2.3.0
 cd -
-mv ../../../SVtimersDocs/tags/1.5.0/timers-* upload/.
+mv ../../../SVtimersDocs/tags/1.6.0/timers-* upload/.
 
 
 
