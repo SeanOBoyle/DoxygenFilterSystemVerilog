@@ -16,7 +16,7 @@
 //----------------------------------------------------------------------------
 // NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
 /**
- * Test.
+ * Test - brief comment.
  * This file is a test of the doxygen filter script.<br>
  * This contains a semi-complete set of the SystemVerilog constructs
  * that the filter script can handle<br>
@@ -30,7 +30,7 @@
  * Project:  DoxygenFilter
  *
  * @file test.sv
- * @author Sean O'Boyle
+ * @author Author O'Author
  * @par Contact:
  * http://intelligentdv.com/contact/
  * @par Company:
@@ -51,64 +51,211 @@
 
 
 
-
+/**
+ * Put in Quotes Macro.
+ * A paremeterized macro that puts X in quotes
+ */
 #define PUTINQUOTES(x) #x
 
 #include "myfile.sv"
+/**
+ * My Other File Define.
+ * My other file is C++!
+ */
 #define MYOTHERFILE myotherfile.sv
 #include PUTINQUOTES(MYOTHERFILE)
 
 
 // DPI Import
+/**
+ *  DPI Method1.
+ *  A DPI-C import of method dpi_method1<br>
+ *
+ *  @param str1 string - description of parameter str1
+ *  @param regex string - description of parameter regex
+ *  @return int
+ */
  int dpi_method1(input string str1, input string regex) {}
+/**
+ *  DPI Method2.
+ *  A DPI-C import of method dpi_method2<br>
+ *
+ *  @return string
+ */
  string dpi_method2() {}
+/**
+ *  DPI Method3.
+ *  A DPI-C import of method dpi_method3<br>
+ *
+ *  @return string
+ */
  string dpi_method3() {}
+/**
+ *  DPI Method4.
+ *  A DPI-C import of method dpi_method4<br>
+ *
+ *  @param n int - description of parameter n
+ *  @return string
+ */
  string dpi_method4(int n) {}
+/**
+ *  DPI My Init.
+ *  A DPI-C import of method myInit<br>
+ *
+ *  @return void
+ */
  void myInit() {}
-// from standard math library
- real sin(real) {}
-// from standard C library: memory management
+/**
+ *  DPI Sin.
+ *  A DPI-C import of method sin<br>
+ *  From standard math library
+ *
+ *  @param n real - description of parameter n
+ *  @return real
+ */
+ real sin(real n) {}
+/**
+ *  DPI malloc.
+ *  A DPI-C import of method malloc<br>
+ *  From standard C library: memory management
+ *
+ *  @param size chandle - description of parameter size
+ *  @return chandle
+ */
  chandle malloc(int size); // standard C function
+/**
+ *  DPI free.
+ *  A DPI-C import of method free<br>
+ *  From standard C library: memory management
+ *
+ *  @param ptr chandle - description of parameter ptr
+ *  @return void
+ */
  void free(chandle ptr); // standard C function
-// abstract data structure: queue
+/**
+ *  DPI New Queue.
+ *  A DPI-C import of method newQueue<br>
+ *  abstract data structure: queue
+ *
+ *  @param name_of_queue chandle - description of parameter name_of_queue
+ *  @return chandle
+ */
  chandle newQueue(input string name_of_queue) {}
-// Note the following import uses the same foreign function for
-// implementation as the prior import, but has different SystemVerilog name
-// and provides a default value for the argument.
+/**
+ *  DPI New (Anon) Queue.
+ *  A DPI-C import of method newAnonQueue - renamed to newQueue2<br>
+ *  abstract data structure: queue
+ *
+ *  @note Note the following import uses the same foreign function for
+ *        implementation as the prior import, but has different SystemVerilog name
+ *        and provides a default value for the argument.
+ *
+ *  @param s string - description of parameter s (defaults to null)
+ *  @return chandle
+ */
  chandle newAnonQueue(input string s=null) {}
- chandle newElem(bit <15:0> ) {}
+/**
+ *  DPI New Element.
+ *  A DPI-C import of method newElem<br>
+ *
+ *  @param mybitvector bit[15:0] - description of parameter s (defaults to null)
+ *  @return chandle
+ */
+ chandle newElem(bit <15:0>  mybitvector) {}
+/**
+ *  DPI Enqueue.
+ *  A DPI-C import of method enqueue<br>
+ *
+ *  @param queue chandle - description of parameter queue
+ *  @param elem chandle - description of parameter elem
+ *  @return void
+ */
  void enqueue(chandle queue, chandle elem) {}
+/**
+ *  DPI Dequeue.
+ *  A DPI-C import of method dequeue<br>
+ *
+ *  @param queue chandle - description of parameter queue
+ *  @return chandle
+ */
  chandle dequeue(chandle queue) {}
-// miscellanea
+/**
+ *  DPI Get Stimulus.
+ *  A DPI-C import of method getStimulus<br>
+ *
+ *  @return bit [15:0]
+ */
  bit <15:0>  getStimulus() {}
+/**
+ *  DPI Process Transaction.
+ *  A DPI-C import of method processTransaction<br>
+ *
+ *  @param elem chandle - description of parameter elem
+ *  @param arr [64:1] logic [0:63] - description of parameter arr
+ *  @return void
+ */
  void processTransaction(chandle elem,
-                                       output logic <64:1>  arr [0:63]) {}
+                                                        output logic <64:1>  arr [0:63]) {}
+/**
+ *  DPI Check Results.
+ *  A DPI-C import of method checkResults<br>
+ *
+ *  @param s string - description of parameter s
+ *  @param packet bit [511:0] - description of parameter packet
+ */
 task checkResults(input string s, bit <511:0>  packet) {}
 
-
-// DPI Export
+// DPI Export -- exported methods are not documented; since they are replicated
 
 
 // Macros
+/**
+ *  My Define.
+ *  A define for fun<br>
+ */
 #define MYDEFINE mydefine
 #ifdef MYDEFINE
+/**
+ *  My Define2.
+ *  Another define and also fun<br>
+ */
 #define MYDEFINE2 mydefine2
 #else
 #undef MYDEFINE2
 #endif
 
 // More Macros
+/**
+ *  foo define.
+ *  define with concatenation<br>
+ */
 #define foo(f) f##_suffix
+/**
+ *  msg define.
+ *  define with concatenation<br>
+ */
 #define msg(x,y) "x: \"y\""
 
 // Multiline Macros (from VMM)
 #ifndef __FILE__
+/**
+ *  FILE define.
+ *  define with doublequotes<br>
+ */
 #define __FILE__ ""
 #endif
 #ifndef __LINE__
+/**
+ *  Line define.
+ *  incase __LINE__ isn't defined<br>
+ */
 #define __LINE__ -1
 #endif
 
+/**
+ *  Parameterized Macro VMM Warning.
+ *  A parameterized macro - taken from VMM<br>
+ */
 #define vmm_warning(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -120,6 +267,10 @@ do \
    /* synopsys translate_on */ \
 while(0)
 
+/**
+ *  Parameterized Macro VMM Error.
+ *  A parameterized macro - taken from VMM<br>
+ */
 #define vmm_error(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -130,6 +281,10 @@ do \
    /* synopsys translate_on */ \
 while (0)
 
+/**
+ *  Parameterized Macro VMM Fatal.
+ *  A parameterized macro - taken from VMM<br>
+ */
 #define vmm_fatal(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -140,7 +295,11 @@ do \
    /* synopsys translate_on */ \
 while (0)
 
-// Another Mulitline Macro (from VMM)
+/**
+ *  Parameterized Macro VMM Channel.
+ *  A parameterized macro - taken from VMM<br>
+ *  @note there's an inline comment in this one
+ */
 #define vmm_channel(T) \
 class vmm_channel_(T) : public vmm_channel { public:  \
  \
@@ -212,13 +371,29 @@ class vmm_channel_(T) : public vmm_channel { public:  \
  \
 };
 
+/**
+ *  Define TLM FIFO Task Error Message.
+ *  A macro - with a SV keyword embedded<br>
+ */
 #define TLM_FIFO_TASK_ERROR "fifo channel task not implemented"
+/**
+ *  Define TLM FIFO Function Error Message.
+ *  A macro - with a SV keyword embedded<br>
+ */
 #define TLM_FIFO_FUNCTION_ERROR "fifo channel function not implemented"
+/**
+ *  Define TLM FIFO Function Error2 Message.
+ *  A multiline macro - with a SV keyword embedded<br>
+ */
 #define TLM_FIFO_FUNCTION_ERROR2 "fifo channel \
                              function not implemented \
                              yes we have no bananas \
                              today function" things
 
+/**
+ *  Define TLM FIFO Function Error3 Message.
+ *  A multiline macro - with a SV keyword embedded and an empty line with a trailing word<br>
+ */
 #define TLM_FIFO_FUNCTION_ERROR3 "fifo channel \
 \
                              function not implemented \
@@ -252,7 +427,7 @@ namespace  foopack {
     *
     */
    class foo_test_class { public: 
-      int m_anint;
+      int m_anint; ///< An Int
    };
    /**
     *  Test Class2 in foo package.
@@ -262,7 +437,7 @@ namespace  foopack {
     *
     */
    class foo_test_class2 { public: 
-      int m_anint;
+      int m_anint; ///< An Int
    };
 
 }
@@ -283,8 +458,8 @@ namespace  goopack {
     *
     */
    class goo_test_class : public foo_test_class { public: 
-      int m_anint;
-      foo_test_class2 m_ftc;
+      int m_anint;  ///< An Int
+      foo_test_class2 m_ftc;  ///< Foo Test Class
    };
 
 }
@@ -305,7 +480,7 @@ namespace  moopack {
     *
     */
    class moo_test_class : public goo_test_class { public: 
-      int m_anint;
+      int m_anint; ///< An Int
    };
 
 }
@@ -326,7 +501,7 @@ namespace  doopack {
     *
     */
    class doo_test_class : public moo_test_class { public: 
-      int m_anint;
+      int m_anint; ///< An Int
    };
 
 }
@@ -347,7 +522,7 @@ protected:     rand int m_protected_int;  ///< Protected Int
     rand bit m_protected_bit;  ///< Protected Bit
 public:          event   m_public_event;   ///< Public Event
 private:     event   m_local_event;    ///< Private Event
-public:          int     m_int_array [1:32];
+public:          int     m_int_array [1:32];  ///< Fixed Size Array of Int
    // Test bitvector brace conversion
          rand bit <31:0>  m_public_bitvector; ///< Public Bit Vector
    // Test enum typedef
@@ -447,8 +622,8 @@ public: 	bit    m_public_var; ///< A public variable
     *  Constructor.
     *  Class Constructor<br>
     *
-    *  @param myint int - My Integer Parameter
-    *  @param mybit bit - My Bit Parameter (defaults to 0)
+    *  @param myint int - description of parameter myint
+    *  @param mybit bit - description of parameter mybit (defaults to 0)
     */
     new(time myint, bit mybit = 0) {
       m_local_int = myint;
@@ -482,8 +657,6 @@ public:
     *  Test method access specifier.<br>
     *  Test virtual method specifier.
     *
-    *  @return void
-    *
     */
    virtual task mypublicvirtualfunction() {
       $display("This is public");
@@ -493,16 +666,12 @@ public:
     *  Pure Virtual Task.
     *  Test pure virtual specifier
     *
-    *  @return void
-    *
     */
    virtual task mypurevirtualtask() = 0;
 
    /**
     *  Protected Task.
     *  Test method access specifier
-    *
-    *  @return void
     *
     */
 protected:     task myprotectedfunction() {
@@ -512,8 +681,6 @@ public:
    /**
     *  Protected Task.
     *  Test method access specifier
-    *
-    *  @return void
     *
     */
 protected:     task myprotectedfunction() {
@@ -524,7 +691,9 @@ public:
     *  Pure Virtual Function.
     *  Test pure virtual specifier
     *
-    *  @return void
+    *  @param A int - description of parameter A
+    *  @param B int - description of parameter B
+    *  @return int
     *
     */
    virtual  int mypurevirtualfunction(int A,
@@ -547,6 +716,8 @@ public:
     *  Test Virtual Function<br>
     *  Test bit vector braces<br>
     *  Test literals with tickmark (')<br>
+    *
+    *  @return void
     */
     virtual  void myvirtualfunction() {
        int myint = 0d3;
@@ -561,10 +732,16 @@ public:
 
 };
 
+//----------------------------------------------------------------------------
+// Extern Constraint
+//----------------------------------------------------------------------------
 constraint test_class_basic::extern_constraint() { 
    m_local_int == m_protected_int;
 }
 
+//----------------------------------------------------------------------------
+// My Extern Function
+//----------------------------------------------------------------------------
 // Extern Function show()
 // Test string in quotes
  void test_class_basic::myexternfunction() {
@@ -577,6 +754,10 @@ constraint test_class_basic::extern_constraint() {
    $display("");
 }
 
+
+//----------------------------------------------------------------------------
+// My Protected Extern Function
+//----------------------------------------------------------------------------
  void test_class_basic::myprotectedexternfunction() {
    // Cast from bit to int
    int myint;
@@ -607,6 +788,10 @@ constraint test_class_basic::extern_constraint() {
 /**
  * MyProgram2 Program Block.
  * A program block with inputs/outputs declared over multiple lines
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 /** @ingroup SVprogram */program myprogram2(int myint,
                    bit mybit) {
@@ -631,9 +816,13 @@ constraint test_class_basic::extern_constraint() {
 /**
  * MyModule2 Module Block.
  * A module block with inputs/outputs declared over multiple lines
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 /** @ingroup SVmodule */module mymodule2(int myint,
-                bit mybit) {
+                 bit mybit) {
     bus_A mybus;
     {
       $display("Hello World");
@@ -643,6 +832,10 @@ constraint test_class_basic::extern_constraint() {
 /**
  * MyModule3 Module Block.
  * A module block with inputs/outputs declared over multiple lines - starting on the next line
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 /** @ingroup SVmodule */module mymodule3
 (
@@ -668,8 +861,11 @@ bit mybit
 /**
  * BusA interface Block.
  * An interface with single clock input.
+ *
+ *  @param clk bit - description of parameter clk
+ *
  */
-/** @ingroup SVinterface */interface bus_A(input clk) {
+/** @ingroup SVinterface */interface bus_A(input bit clk) {
       logic <15:0>  data;
       logic write;
       modport test (input data, output write);
@@ -679,9 +875,13 @@ bit mybit
 /**
  * BusB interface Block.
  * An interface with two lines of I/O
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-/** @ingroup SVinterface */interface bus_B(input clk,
-                 output foo) {
+/** @ingroup SVinterface */interface bus_B(input bit clk,
+                 output logic foo) {
       logic <8:1>  cmd;
       logic enable;
       logic foo;
@@ -692,8 +892,12 @@ bit mybit
 /**
  * BusC interface Block.
  * A parameterized interface in one line
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-/** @ingroup SVinterface */template <WIDTH=8> interface bus_C(input clk, output foo) {
+/** @ingroup SVinterface */template <WIDTH=8> interface bus_C(input bit clk, output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
       modport test (input enable);
@@ -703,9 +907,13 @@ bit mybit
 /**
  * BusD interface Block.
  * A parameterized interface with two lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-/** @ingroup SVinterface */template <WIDTH=8> interface bus_D(input clk,
-                            output foo) {
+/** @ingroup SVinterface */template <WIDTH=8> interface bus_D(input bit clk,
+                            output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
       modport test (input enable);
@@ -715,9 +923,13 @@ bit mybit
 /**
  * BusE interface Block.
  * A parameterized interface with two lines of parameters and one lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
 /** @ingroup SVinterface */template <WIDTH=8,
-                  DEPTH=20> interface bus_E  (input clk, output foo) {
+                  DEPTH=20> interface bus_E  (input bit clk, output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
       logic arr [DEPTH];
@@ -728,10 +940,14 @@ bit mybit
 /**
  * BusF interface Block.
  * A parameterized interface with two lines of parameters and two lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
 /** @ingroup SVinterface */template <WIDTH=8,
-                  DEPTH=20> interface bus_F  (input clk,
-                             output foo) {
+                  DEPTH=20> interface bus_F  (input bit clk,
+                             output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
       logic arr [DEPTH];
@@ -742,45 +958,60 @@ bit mybit
 /**
  * My Derived Class.
  * Extends test_class_basic
+ *
+ * @class myderivedclass
+ *
  */
 class myderivedclass : public test_class_basic { public: 
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 };
 
 /**
  * My Derived Class Package.
  * Extends foopack::foo_test_class
+ *
+ * @class myderivedclass_package
+ *
  */
 class myderivedclass_package : public foopack::foo_test_class { public: 
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 };
 
 /**
  * My Template Class.
  * type T=int
  * extends test_class_basic
+ *
+ * @class mytemplateclass
+ *
  */
 template  <typename T=int> class mytemplateclass : public test_class_basic { public: 
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 };
 
 /**
  * My Template Class2.
  * type T=custom
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass2
+ *
  */
 template  <typename T=custom> class mytemplateclass2 : public mytemplateclass <bit>  { public: 
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 };
 
 /**
  * My Template Class3.
  * type T=int, type B=bit
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass3
+ *
  */
 template  <typename T=int, typename B=bit> class mytemplateclass3 : public mytemplateclass <bit>  { public: 
    int m_myint;
@@ -791,6 +1022,9 @@ template  <typename T=int, typename B=bit> class mytemplateclass3 : public mytem
  * My Template Class4.
  * type T=int
  * extends nothing...
+ *
+ * @class mytemplateclass4
+ *
  */
 template  <typename T=int> class mytemplateclass4   { public: 
    int m_myint;
@@ -801,6 +1035,9 @@ template  <typename T=int> class mytemplateclass4   { public:
  * My Template Class5.
  * int B=3
  * extends nothing...
+ *
+ * @class mytemplateclass5
+ *
  */
 template  <int B=3> class mytemplateclass5   { public: 
    int m_myint;
@@ -811,6 +1048,9 @@ template  <int B=3> class mytemplateclass5   { public:
  * My Template Class6.
  * type T=int, int B=3
  * extends nothing...
+ *
+ * @class mytemplateclass6
+ *
  */
 template  <typename T=int, int B=3> class mytemplateclass6   { public: 
    int m_myint;
@@ -821,6 +1061,9 @@ template  <typename T=int, int B=3> class mytemplateclass6   { public:
  * My Template Class7.
  * type T=int, int B=3
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass7
+ *
  */
 template  <typename T=int, int B=3> class mytemplateclass7 : public mytemplateclass <bit>  { public: 
    int m_myint;
@@ -831,6 +1074,9 @@ template  <typename T=int, int B=3> class mytemplateclass7 : public mytemplatecl
  * My Template Class8.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass6#(bit, 5)
+ *
+ * @class mytemplateclass8
+ *
  */
 template  <typename T=int,
                         int B=3,
@@ -845,6 +1091,9 @@ template  <typename T=int,
  * My Template Class9.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass4#(bit, 5)
+ *
+ * @class mytemplateclass9
+ *
  */
 template  <typename T=int,
                          int B=3,
@@ -858,6 +1107,9 @@ template  <typename T=int,
  * My Template Class10.
  * type T=int, int B=3, type C=mine
  * extends nothing...
+ *
+ * @class mytemplateclass10
+ *
  */
 template  <typename T=int,
                          int B=3,
@@ -869,6 +1121,9 @@ template  <typename T=int,
 /**
  * My Class11.
  * extends template class...
+ *
+ * @class myclass11
+ *
  */
 class myclass11 : public mytemplateclass10 <foo, 5, boo>  { public: 
    int m_myint;
@@ -878,6 +1133,9 @@ class myclass11 : public mytemplateclass10 <foo, 5, boo>  { public:
  * My Template Class12.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass6#(bit, 5)
+ *
+ * @class mytemplateclass12
+ *
  */
 template 
    <typename T=int,
@@ -889,6 +1147,13 @@ template
    bit m_mybit;
 };
 
+/**
+ * My Template Select Class.
+ * Template class that is an ifdef extension of a `defined base class
+ *
+ * @class mytemplateselectclass
+ *
+ */
 template  <typename ABC=data, typename DEF=data2> class mytemplateselectclass  
 #ifdef DEFBASE
   : public DEFBASE
@@ -897,6 +1162,13 @@ template  <typename ABC=data, typename DEF=data2> class mytemplateselectclass
    int m_myint;
 };
 
+/**
+ * My Select Class.
+ * Class that is an ifdef extension of a `defined base class
+ *
+ * @class myselectclass
+ *
+ */
 class myselectclass
 #ifdef DEFBASE
   : public DEFBASE
@@ -905,6 +1177,13 @@ class myselectclass
    int m_myint;
 };
 
+/**
+ * abc Class.
+ * Template Class with 3 template types extending a template class "def"
+ *
+ * @class abc
+ *
+ */
 template  <typename f = null, typename g = z, typename h = x> class abc : public def <f>  { public: 
    int m_myint;
 };

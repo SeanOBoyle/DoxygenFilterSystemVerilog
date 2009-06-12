@@ -16,7 +16,7 @@
 //----------------------------------------------------------------------------
 // NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
 /**
- * Test Include File.
+ * Test Include File - brief comment.
  * This file is a test of the doxygen filter script.<br>
  * This contains a couple of classes to be included in a package with a `include<br>
  * <br>
@@ -29,7 +29,7 @@
  * Project:  DoxygenFilter
  *
  * @file test_incl.sv
- * @author Sean O'Boyle
+ * @author Author O'Author
  * @par Contact:
  * http://intelligentdv.com/contact/
  * @par Company:
