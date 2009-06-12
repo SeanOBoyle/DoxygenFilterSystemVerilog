@@ -16,7 +16,7 @@
 //----------------------------------------------------------------------------
 // NOTE: 'deleteme' comments added to prevent SVN from changing text (where the sv and golden would result in a mismatch)
 /**
- * Test.
+ * Test - brief comment.
  * This file is a test of the doxygen filter script.<br>
  * This contains a semi-complete set of the SystemVerilog constructs
  * that the filter script can handle<br>
@@ -30,7 +30,7 @@
  * Project:  DoxygenFilter
  *
  * @file test.sv
- * @author Sean O'Boyle
+ * @author Author O'Author
  * @par Contact:
  * http://intelligentdv.com/contact/
  * @par Company:
@@ -51,64 +51,211 @@
 timeunit 1 ns;
 timeprecision 1 ps;
 
-
+/**
+ * Put in Quotes Macro.
+ * A paremeterized macro that puts X in quotes
+ */
 `define PUTINQUOTES(x) `"x`"
 
 `include "myfile.sv"
+/**
+ * My Other File Define.
+ * My other file is C++!
+ */
 `define MYOTHERFILE myotherfile.sv
 `include `PUTINQUOTES(`MYOTHERFILE)
 
 
 // DPI Import
+/**
+ *  DPI Method1.
+ *  A DPI-C import of method dpi_method1<br>
+ *
+ *  @param str1 string - description of parameter str1
+ *  @param regex string - description of parameter regex
+ *  @return int
+ */
 import "DPI-C" function int dpi_method1(input string str1, input string regex);
+/**
+ *  DPI Method2.
+ *  A DPI-C import of method dpi_method2<br>
+ *
+ *  @return string
+ */
 import "DPI-C" function string dpi_method2();
+/**
+ *  DPI Method3.
+ *  A DPI-C import of method dpi_method3<br>
+ *
+ *  @return string
+ */
 import "DPI-C" function string dpi_method3();
+/**
+ *  DPI Method4.
+ *  A DPI-C import of method dpi_method4<br>
+ *
+ *  @param n int - description of parameter n
+ *  @return string
+ */
 import "DPI-C" function string dpi_method4(int n);
+/**
+ *  DPI My Init.
+ *  A DPI-C import of method myInit<br>
+ *
+ *  @return void
+ */
 import "DPI-C" function void myInit();
-// from standard math library
-import "DPI-C" pure function real sin(real);
-// from standard C library: memory management
+/**
+ *  DPI Sin.
+ *  A DPI-C import of method sin<br>
+ *  From standard math library
+ *
+ *  @param n real - description of parameter n
+ *  @return real
+ */
+import "DPI-C" pure function real sin(real n);
+/**
+ *  DPI malloc.
+ *  A DPI-C import of method malloc<br>
+ *  From standard C library: memory management
+ *
+ *  @param size chandle - description of parameter size
+ *  @return chandle
+ */
 import "DPI-C" function chandle malloc(int size); // standard C function
+/**
+ *  DPI free.
+ *  A DPI-C import of method free<br>
+ *  From standard C library: memory management
+ *
+ *  @param ptr chandle - description of parameter ptr
+ *  @return void
+ */
 import "DPI-C" function void free(chandle ptr); // standard C function
-// abstract data structure: queue
+/**
+ *  DPI New Queue.
+ *  A DPI-C import of method newQueue<br>
+ *  abstract data structure: queue
+ *
+ *  @param name_of_queue chandle - description of parameter name_of_queue
+ *  @return chandle
+ */
 import "DPI-C" function chandle newQueue(input string name_of_queue);
-// Note the following import uses the same foreign function for
-// implementation as the prior import, but has different SystemVerilog name
-// and provides a default value for the argument.
-import "DPI-C" newQueue=function chandle newAnonQueue(input string s=null);
-import "DPI-C" function chandle newElem(bit [15:0]);
+/**
+ *  DPI New (Anon) Queue.
+ *  A DPI-C import of method newAnonQueue - renamed to newQueue2<br>
+ *  abstract data structure: queue
+ *
+ *  @note Note the following import uses the same foreign function for
+ *        implementation as the prior import, but has different SystemVerilog name
+ *        and provides a default value for the argument.
+ *
+ *  @param s string - description of parameter s (defaults to null)
+ *  @return chandle
+ */
+import "DPI-C" newQueue2=function chandle newAnonQueue(input string s=null);
+/**
+ *  DPI New Element.
+ *  A DPI-C import of method newElem<br>
+ *
+ *  @param mybitvector bit[15:0] - description of parameter s (defaults to null)
+ *  @return chandle
+ */
+import "DPI-C" function chandle newElem(bit [15:0] mybitvector);
+/**
+ *  DPI Enqueue.
+ *  A DPI-C import of method enqueue<br>
+ *
+ *  @param queue chandle - description of parameter queue
+ *  @param elem chandle - description of parameter elem
+ *  @return void
+ */
 import "DPI-C" function void enqueue(chandle queue, chandle elem);
+/**
+ *  DPI Dequeue.
+ *  A DPI-C import of method dequeue<br>
+ *
+ *  @param queue chandle - description of parameter queue
+ *  @return chandle
+ */
 import "DPI-C" function chandle dequeue(chandle queue);
-// miscellanea
+/**
+ *  DPI Get Stimulus.
+ *  A DPI-C import of method getStimulus<br>
+ *
+ *  @return bit [15:0]
+ */
 import "DPI-C" function bit [15:0] getStimulus();
+/**
+ *  DPI Process Transaction.
+ *  A DPI-C import of method processTransaction<br>
+ *
+ *  @param elem chandle - description of parameter elem
+ *  @param arr [64:1] logic [0:63] - description of parameter arr
+ *  @return void
+ */
 import "DPI-C" context function void processTransaction(chandle elem,
-                                       output logic [64:1] arr [0:63]);
+                                                        output logic [64:1] arr [0:63]);
+/**
+ *  DPI Check Results.
+ *  A DPI-C import of method checkResults<br>
+ *
+ *  @param s string - description of parameter s
+ *  @param packet bit [511:0] - description of parameter packet
+ */
 import "DPI-C" task checkResults(input string s, bit [511:0] packet);
 
-
-// DPI Export
+// DPI Export -- exported methods are not documented; since they are replicated
 export "DPI-C" function int dpi_export_method();
 
 // Macros
+/**
+ *  My Define.
+ *  A define for fun<br>
+ */
 `define MYDEFINE mydefine
 `ifdef MYDEFINE
+/**
+ *  My Define2.
+ *  Another define and also fun<br>
+ */
 `define MYDEFINE2 mydefine2
 `else
 `undef MYDEFINE2
 `endif
 
 // More Macros
+/**
+ *  foo define.
+ *  define with concatenation<br>
+ */
 `define foo(f) f``_suffix
+/**
+ *  msg define.
+ *  define with concatenation<br>
+ */
 `define msg(x,y) `"x: `\`"y`\`"`"
 
 // Multiline Macros (from VMM)
 `ifndef __FILE__
+/**
+ *  FILE define.
+ *  define with doublequotes<br>
+ */
 `define __FILE__ `"`"
 `endif
 `ifndef __LINE__
+/**
+ *  Line define.
+ *  incase __LINE__ isn't defined<br>
+ */
 `define __LINE__ -1
 `endif
 
+/**
+ *  Parameterized Macro VMM Warning.
+ *  A parameterized macro - taken from VMM<br>
+ */
 `define vmm_warning(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -120,6 +267,10 @@ do \
    /* synopsys translate_on */ \
 while(0)
 
+/**
+ *  Parameterized Macro VMM Error.
+ *  A parameterized macro - taken from VMM<br>
+ */
 `define vmm_error(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -130,6 +281,10 @@ do \
    /* synopsys translate_on */ \
 while (0)
 
+/**
+ *  Parameterized Macro VMM Fatal.
+ *  A parameterized macro - taken from VMM<br>
+ */
 `define vmm_fatal(log, msg)  \
 do \
    /* synopsys translate_off */ \
@@ -140,7 +295,11 @@ do \
    /* synopsys translate_on */ \
 while (0)
 
-// Another Mulitline Macro (from VMM)
+/**
+ *  Parameterized Macro VMM Channel.
+ *  A parameterized macro - taken from VMM<br>
+ *  @note there's an inline comment in this one
+ */
 `define vmm_channel(T) \
 class `vmm_channel_(T) extends vmm_channel; \
  \
@@ -212,13 +371,29 @@ class `vmm_channel_(T) extends vmm_channel; \
  \
 endclass
 
+/**
+ *  Define TLM FIFO Task Error Message.
+ *  A macro - with a SV keyword embedded<br>
+ */
 `define TLM_FIFO_TASK_ERROR "fifo channel task not implemented"
+/**
+ *  Define TLM FIFO Function Error Message.
+ *  A macro - with a SV keyword embedded<br>
+ */
 `define TLM_FIFO_FUNCTION_ERROR "fifo channel function not implemented"
+/**
+ *  Define TLM FIFO Function Error2 Message.
+ *  A multiline macro - with a SV keyword embedded<br>
+ */
 `define TLM_FIFO_FUNCTION_ERROR2 "fifo channel \
                              function not implemented \
                              yes we have no bananas \
                              today function" things
 
+/**
+ *  Define TLM FIFO Function Error3 Message.
+ *  A multiline macro - with a SV keyword embedded and an empty line with a trailing word<br>
+ */
 `define TLM_FIFO_FUNCTION_ERROR3 "fifo channel \
 \
                              function not implemented \
@@ -252,7 +427,7 @@ package foopack;
     *
     */
    class foo_test_class;
-      int m_anint;
+      int m_anint; ///< An Int
    endclass: foo_test_class
    /**
     *  Test Class2 in foo package.
@@ -262,7 +437,7 @@ package foopack;
     *
     */
    class foo_test_class2;
-      int m_anint;
+      int m_anint; ///< An Int
    endclass: foo_test_class2
 
 endpackage: foopack
@@ -283,8 +458,8 @@ package goopack;
     *
     */
    class goo_test_class extends foo_test_class;
-      int m_anint;
-      foo_test_class2 m_ftc;
+      int m_anint;  ///< An Int
+      foo_test_class2 m_ftc;  ///< Foo Test Class
    endclass: goo_test_class
 
 endpackage: goopack
@@ -305,7 +480,7 @@ package moopack;
     *
     */
    class moo_test_class extends goo_test_class;
-      int m_anint;
+      int m_anint; ///< An Int
    endclass: moo_test_class
 
 endpackage: moopack
@@ -326,7 +501,7 @@ package doopack;
     *
     */
    class doo_test_class extends moo_test_class;
-      int m_anint;
+      int m_anint; ///< An Int
    endclass: doo_test_class
 
 endpackage: doopack
@@ -347,7 +522,7 @@ class test_class_basic;
    protected rand bit m_protected_bit;  ///< Protected Bit
          event   m_public_event;   ///< Public Event
    local event   m_local_event;    ///< Private Event
-         int     m_int_array [1:32];
+         int     m_int_array [1:32];  ///< Fixed Size Array of Int
    // Test bitvector brace conversion
          rand bit [31:0] m_public_bitvector; ///< Public Bit Vector
    // Test enum typedef
@@ -447,8 +622,8 @@ class test_class_basic;
     *  Constructor.
     *  Class Constructor<br>
     *
-    *  @param myint int - My Integer Parameter
-    *  @param mybit bit - My Bit Parameter (defaults to 0)
+    *  @param myint int - description of parameter myint
+    *  @param mybit bit - description of parameter mybit (defaults to 0)
     */
    function new(time myint, bit mybit = 0);
       m_local_int = myint;
@@ -482,8 +657,6 @@ class test_class_basic;
     *  Test method access specifier.<br>
     *  Test virtual method specifier.
     *
-    *  @return void
-    *
     */
    virtual task mypublicvirtualfunction();
       $display("This is public");
@@ -493,16 +666,12 @@ class test_class_basic;
     *  Pure Virtual Task.
     *  Test pure virtual specifier
     *
-    *  @return void
-    *
     */
    pure virtual task mypurevirtualtask();
 
    /**
     *  Protected Task.
     *  Test method access specifier
-    *
-    *  @return void
     *
     */
    protected task myprotectedfunction();
@@ -512,8 +681,6 @@ class test_class_basic;
    /**
     *  Protected Task.
     *  Test method access specifier
-    *
-    *  @return void
     *
     */
    protected task myprotectedfunction();
@@ -524,7 +691,9 @@ class test_class_basic;
     *  Pure Virtual Function.
     *  Test pure virtual specifier
     *
-    *  @return void
+    *  @param A int - description of parameter A
+    *  @param B int - description of parameter B
+    *  @return int
     *
     */
    pure virtual function int mypurevirtualfunction(int A,
@@ -547,6 +716,8 @@ class test_class_basic;
     *  Test Virtual Function<br>
     *  Test bit vector braces<br>
     *  Test literals with tickmark (')<br>
+    *
+    *  @return void
     */
     virtual function void myvirtualfunction;
        int myint = 5'd3;
@@ -561,10 +732,16 @@ class test_class_basic;
 
 endclass:test_class_basic
 
+//----------------------------------------------------------------------------
+// Extern Constraint
+//----------------------------------------------------------------------------
 constraint test_class_basic::extern_constraint {
    m_local_int == m_protected_int;
 }
 
+//----------------------------------------------------------------------------
+// My Extern Function
+//----------------------------------------------------------------------------
 // Extern Function show()
 // Test string in quotes
 function void test_class_basic::myexternfunction();
@@ -577,6 +754,10 @@ function void test_class_basic::myexternfunction();
    $display("");
 endfunction: myexternfunction
 
+
+//----------------------------------------------------------------------------
+// My Protected Extern Function
+//----------------------------------------------------------------------------
 function void test_class_basic::myprotectedexternfunction();
    // Cast from bit to int
    int myint;
@@ -607,6 +788,10 @@ endprogram: myprogram1
 /**
  * MyProgram2 Program Block.
  * A program block with inputs/outputs declared over multiple lines
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 program myprogram2(int myint,
                    bit mybit);
@@ -631,9 +816,13 @@ endmodule: mymodule1
 /**
  * MyModule2 Module Block.
  * A module block with inputs/outputs declared over multiple lines
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 module mymodule2(int myint,
-                bit mybit);
+                 bit mybit);
    virtual interface bus_A mybus;
    initial begin
       $display("Hello World");
@@ -643,6 +832,10 @@ endmodule: mymodule2
 /**
  * MyModule3 Module Block.
  * A module block with inputs/outputs declared over multiple lines - starting on the next line
+ *
+ *  @param myint int - description of parameter myint
+ *  @param mybit int - description of parameter mybit
+ *
  */
 module mymodule3
 (
@@ -668,8 +861,11 @@ endinterface
 /**
  * BusA interface Block.
  * An interface with single clock input.
+ *
+ *  @param clk bit - description of parameter clk
+ *
  */
-interface bus_A (input clk);
+interface bus_A (input bit clk);
       logic [15:0] data;
       logic write;
       modport test (input data, output write);
@@ -679,9 +875,13 @@ endinterface
 /**
  * BusB interface Block.
  * An interface with two lines of I/O
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-interface bus_B (input clk,
-                 output foo);
+interface bus_B (input bit clk,
+                 output logic foo);
       logic [8:1] cmd;
       logic enable;
       logic foo;
@@ -692,8 +892,12 @@ endinterface
 /**
  * BusC interface Block.
  * A parameterized interface in one line
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-interface bus_C #(WIDTH=8) (input clk, output foo);
+interface bus_C #(WIDTH=8) (input bit clk, output logic foo);
       logic [WDTH-1:0] cmd;
       logic enable;
       modport test (input enable);
@@ -703,9 +907,13 @@ endinterface
 /**
  * BusD interface Block.
  * A parameterized interface with two lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
-interface bus_D #(WIDTH=8) (input clk,
-                            output foo);
+interface bus_D #(WIDTH=8) (input bit clk,
+                            output logic foo);
       logic [WDTH-1:0] cmd;
       logic enable;
       modport test (input enable);
@@ -715,9 +923,13 @@ endinterface
 /**
  * BusE interface Block.
  * A parameterized interface with two lines of parameters and one lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
 interface bus_E #(WIDTH=8,
-                  DEPTH=20) (input clk, output foo);
+                  DEPTH=20) (input bit clk, output logic foo);
       logic [WDTH-1:0] cmd;
       logic enable;
       logic arr [DEPTH];
@@ -728,10 +940,14 @@ endinterface
 /**
  * BusF interface Block.
  * A parameterized interface with two lines of parameters and two lines of IO
+ *
+ *  @param clk bit - description of parameter clk
+ *  @param foo logic - description of parameter foo
+ *
  */
 interface bus_F #(WIDTH=8,
-                  DEPTH=20) (input clk,
-                             output foo);
+                  DEPTH=20) (input bit clk,
+                             output logic foo);
       logic [WDTH-1:0] cmd;
       logic enable;
       logic arr [DEPTH];
@@ -742,45 +958,60 @@ endinterface
 /**
  * My Derived Class.
  * Extends test_class_basic
+ *
+ * @class myderivedclass
+ *
  */
 class myderivedclass extends test_class_basic;
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 endclass
 
 /**
  * My Derived Class Package.
  * Extends foopack::foo_test_class
+ *
+ * @class myderivedclass_package
+ *
  */
 class myderivedclass_package extends foopack::foo_test_class;
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 endclass
 
 /**
  * My Template Class.
  * type T=int
  * extends test_class_basic
+ *
+ * @class mytemplateclass
+ *
  */
 class mytemplateclass #(type T=int) extends test_class_basic;
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 endclass
 
 /**
  * My Template Class2.
  * type T=custom
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass2
+ *
  */
 class mytemplateclass2 #(type T=custom) extends mytemplateclass#(bit);
-   int m_myint;
-   bit m_mybit;
+   int m_myint; ///< Description of My Int
+   bit m_mybit; ///< Description of My Bit
 endclass
 
 /**
  * My Template Class3.
  * type T=int, type B=bit
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass3
+ *
  */
 class mytemplateclass3 #(type T=int, type B=bit) extends mytemplateclass#(bit);
    int m_myint;
@@ -791,6 +1022,9 @@ endclass
  * My Template Class4.
  * type T=int
  * extends nothing...
+ *
+ * @class mytemplateclass4
+ *
  */
 class mytemplateclass4 #(type T=int);
    int m_myint;
@@ -801,6 +1035,9 @@ endclass
  * My Template Class5.
  * int B=3
  * extends nothing...
+ *
+ * @class mytemplateclass5
+ *
  */
 class mytemplateclass5 #(int B=3);
    int m_myint;
@@ -811,6 +1048,9 @@ endclass
  * My Template Class6.
  * type T=int, int B=3
  * extends nothing...
+ *
+ * @class mytemplateclass6
+ *
  */
 class mytemplateclass6 #(type T=int, int B=3);
    int m_myint;
@@ -821,6 +1061,9 @@ endclass
  * My Template Class7.
  * type T=int, int B=3
  * extends mytemplateclass#(bit)
+ *
+ * @class mytemplateclass7
+ *
  */
 class mytemplateclass7 #(type T=int, int B=3) extends mytemplateclass #(bit);
    int m_myint;
@@ -831,6 +1074,9 @@ endclass
  * My Template Class8.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass6#(bit, 5)
+ *
+ * @class mytemplateclass8
+ *
  */
 class mytemplateclass8#(type T=int,
                         int B=3,
@@ -845,6 +1091,9 @@ endclass
  * My Template Class9.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass4#(bit, 5)
+ *
+ * @class mytemplateclass9
+ *
  */
 class mytemplateclass9 #(type T=int,
                          int B=3,
@@ -858,6 +1107,9 @@ endclass
  * My Template Class10.
  * type T=int, int B=3, type C=mine
  * extends nothing...
+ *
+ * @class mytemplateclass10
+ *
  */
 class mytemplateclass10 #(type T=int,
                          int B=3,
@@ -869,6 +1121,9 @@ endclass
 /**
  * My Class11.
  * extends template class...
+ *
+ * @class myclass11
+ *
  */
 class myclass11 extends mytemplateclass10 #(foo, 5, boo);
    int m_myint;
@@ -878,6 +1133,9 @@ endclass
  * My Template Class12.
  * type T=int, int B=3, type C=mine
  * extends mytemplateclass6#(bit, 5)
+ *
+ * @class mytemplateclass12
+ *
  */
 class mytemplateclass12
    #(type T=int,
@@ -889,6 +1147,13 @@ class mytemplateclass12
    bit m_mybit;
 endclass
 
+/**
+ * My Template Select Class.
+ * Template class that is an ifdef extension of a `defined base class
+ *
+ * @class mytemplateselectclass
+ *
+ */
 class mytemplateselectclass #(type ABC=data, type DEF=data2)
 `ifdef DEFBASE
   extends `DEFBASE
@@ -897,6 +1162,13 @@ class mytemplateselectclass #(type ABC=data, type DEF=data2)
    int m_myint;
 endclass
 
+/**
+ * My Select Class.
+ * Class that is an ifdef extension of a `defined base class
+ *
+ * @class myselectclass
+ *
+ */
 class myselectclass
 `ifdef DEFBASE
   extends `DEFBASE
@@ -905,6 +1177,13 @@ class myselectclass
    int m_myint;
 endclass
 
+/**
+ * abc Class.
+ * Template Class with 3 template types extending a template class "def"
+ *
+ * @class abc
+ *
+ */
 class abc #(type f = null, type g = z, type h = x) extends def #(f);
    int m_myint;
 endclass
