@@ -532,11 +532,15 @@ foreach (@infile) {
       s/\[(\d):(\d)\]/[$size]/
    }
 
-   # Timeunit / TimePrecision:
+   # Timescale / Timeunit / TimePrecision:
    # Have no meaning to C++ and are typically on their own line in SV
    # Current Strategy:
    #   - get rid of the entire line
    #
+   if (/\btimescale\b/) {
+      print "\n";
+      next;  # skip to next line of file
+   }
    if (/\btimeunit\b/) {
       print "\n";
       next;  # skip to next line of file
