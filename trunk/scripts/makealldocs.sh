@@ -32,6 +32,12 @@ sleep 5
 make clean PROJ_NUM=2.0.1 DOXY_VER=2.4.0
 make docs PROJ_NUM=2.0.1 DOXY_VER=2.4.0
 cd -
+echo ""
+echo "Making OVM 2.0.2 Docs"
+sleep 5
+make clean PROJ_NUM=2.0.2 DOXY_VER=2.4.0
+make docs PROJ_NUM=2.0.2 DOXY_VER=2.4.0
+cd -
 mv ../../../OVMdocs/tags/1.8.0/ovm-* upload/.
 
 # Make VMM Docs
@@ -65,7 +71,7 @@ cd -
 mv ../../../TealTrussDocs/tags/1.6.0/teal_truss-* upload/.
 
 # Make SV Timers Docs
-cd ../../../SVtimersDocs/tags/1.6.0/
+cd ../../../SVtimersDocs/tags/1.7.0/
 echo ""
 echo "Making Timers 1.3.0 Docs"
 sleep 5
