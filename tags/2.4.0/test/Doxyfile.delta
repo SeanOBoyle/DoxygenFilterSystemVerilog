@@ -1,0 +1,49 @@
+# $Id$
+#-----------------------------------------------------------------------------
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#-----------------------------------------------------------------------------
+# Title:        Doxygen Doxyfile Delta File for OVM Project
+# Description:  This doxyfile delta defines the delta's from the SV template
+#               to use doxygen with the IDV SystemVerilog filter for the test
+#               project.
+#               Use with the idv_doxyfile_tmplconv.pl script.
+#
+# Original Author: Sean O'Boyle
+# Contact:         seanoboyle@intelligentdv.com)
+# Company:         Intelligent Design Verification
+# Company URL:     http://intelligentdv.com
+#
+# Download the most recent version here:
+#                  http://intelligentdv.com/downloads
+#
+# File Bugs Here:  http://bugs.intelligentdv.com
+#        Project:  DoxygenFilterSV
+#
+# File: Doxyfile.delta
+# $LastChangedBy$
+# $LastChangedDate$
+# $LastChangedRevision$
+#
+#-----------------------------------------------------------------------------
+FILTER_PATTERNS        = *.sv=./dofilter.sh *.svh=./dofilter.sh
+FILTER_PATTERNS        = *.sv=<PATH_DOXYSCR>/test/dofilter.sh *.svh=<PATH_DOXYSCR>/test/dofilter.sh
+PROJECT_NAME           = Test
+PROJECT_NUMBER         = 1.0.0
+HTML_OUTPUT            = test_doc
+HTML_FOOTER            = <PATH_DOXYSCR>/html/idv_dox_footer.html
+INCLUDE_PATH           = <PATH_PRJ>/test
+INPUT                  = <PATH_PRJ>/test
+EXAMPLE_PATH           = <PATH_PRJ>/test
+
