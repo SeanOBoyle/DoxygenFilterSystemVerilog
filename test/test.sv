@@ -253,6 +253,26 @@ export "DPI-C" function int dpi_export_method();
 `endif
 
 /**
+ *  Test of Stringizer # in macro.
+ *
+ */
+`define testofquotes(passedstring) \
+  string astring = `"passedstring`";
+
+/**
+ *  A better Test of Stringizer # in macro.
+ *  Uses an ovm macro.
+ */
+`define ovm_get_type_name_func(T) \
+   const static string type_name = `"T`"; \
+   virtual function string get_type_name (); \
+     return type_name; \
+   endfunction
+
+ovm_get_type_name_func(foo);
+
+
+/**
  *  Parameterized Macro VMM Warning.
  *  A parameterized macro - taken from VMM<br>
  */

@@ -83,6 +83,7 @@ my $str_back_lc_start = "";
 my $str_back_lc_mid = "";
 my $str_back_lc_end = "";
 my $macro_start = 0;
+my @macroargs;
 my $multiline_macro = 0;
 my $ifdef_start = 0;
 my $inline_comment = "";
@@ -213,10 +214,11 @@ foreach (@infile) {
    #   - delete anything inside of double quotes
    #   - get rid of the entire line
    #   - exception - DPI import / export
-   #   - exception - macro declaration
+   #   - exception - string passed into a macro
    if (/\bexport\s+"DPI/) {}
    elsif (/\bimport\s+"DPI/) {}
    elsif (/^\s*`/){}
+   elsif (/`"(\w+)`"/) {}
    elsif (s/"(.*)"/""/g) {
       $str_back = $1;
    }
@@ -311,10 +313,12 @@ foreach (@infile) {
    #   - HACK: hand replace any defines that are used to define SV keywords
    #           especially those that this filter needs to see to generate correct documentation
    #   - replace the backtick with a pound sign (#) for defined C++ macros
-   #   - double tick (``) is replaced with ##
+   #   - double tick (``) concatenation is replaced with ## concatination
+   #   - escaped quotes (`") around an argument (single word) are replaced with stringizer (#)
    #   - anything else that starts with a tick (`) is assume to be a #define - so the tick is removed
    #   - continue filtering the line
    #   - skip over strings - including strings that continue over multiple lines
+   # TODO: improve algorithm for stringizer replacement -- should only use stringizer on macro arguments
 
    # HACK - in OVM `define for _protected is protected
    s/`_protected/protected/;
@@ -329,9 +333,9 @@ foreach (@infile) {
    if (/^\s*`/) {
       $macro_start = 1;
       s/`(define|error|import|undef|elif|if|include|using|else|ifdef|line|endif|ifndef|pragma)/#$1/;
-      s/``/##/g;
-      s/`"(\w+)`"/#$1/;
-      s/`"/"/g;
+      s/``/##/g; # concatenate
+      s/`"(\w+)`"/#$1/; # stringize - assuming that any single word between escaped quotes should be stringized
+      s/`"/"/g; # escaped quotes that aren't stringized inputs -> convert to quotes
       s/`\\/\\/g;
       s/`(\w)/$1/g;
       if (s/"(.*)"/""/g) {
@@ -354,9 +358,9 @@ foreach (@infile) {
    #   - continue filtering the line
    #   - the last line of the macro doesn't have an escape - so we keep track of this
    if ($multiline_macro) {
-      s/``/##/g;
-      s/`"(\w+)`"/#$1/;
-      s/`"/"/g;
+      s/``/##/g; # concatenate
+      s/`"(\w+)`"/#$1/; # stringize - assuming that any single word between escaped quotes should be stringized
+      s/`"/"/g; # escaped quotes that aren't stringized inputs -> convert to quotes
       s/`\\/\\/g;
       s/`(\w)/$1/g;
       if (/\\\s*$/) {
@@ -603,15 +607,15 @@ foreach (@infile) {
       s/\bendpackage\b/}/;
       s/\bimport\s+(\w+)::\*\s*;/using namespace $1;/;
       s/\bimport\s+(\w+)::(.*)\s*;/using $1::$2;/;
-	   s/\bimport\s+(\w+)\s*;/using namespace $1;/;
+      s/\bimport\s+(\w+)\s*;/using namespace $1;/;
    }
    else {
-#       s/\bpackage\b(.*?);//;
-#       s/\bendpackage\s*:\s*\S+//;
-#       s/\bendpackage\b//;
-#       s/\bimport\s+(\w+)::\*\s*;//;
-#       s/\bimport\s+(\w+)::(.*)\s*;//;
-#       s/\bimport\s+(\w+)\s*;//;
+      s/\bpackage\b(.*?);//;
+      s/\bendpackage\s*:\s*\S+//;
+      s/\bendpackage\b//;
+      s/\bimport\s+(\w+)::\*\s*;//;
+      s/\bimport\s+(\w+)::(.*)\s*;//;
+      s/\bimport\s+(\w+)\s*;//;
       s/extends\s+(\w+)::(\w+)/extends $2/;
    }
 

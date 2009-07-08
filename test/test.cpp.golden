@@ -253,6 +253,26 @@ task checkResults(input string s, bit <511:0>  packet) {}
 #endif
 
 /**
+ *  Test of Stringizer # in macro.
+ *
+ */
+#define testofquotes(passedstring) \
+  string astring = #passedstring;
+
+/**
+ *  A better Test of Stringizer # in macro.
+ *  Uses an ovm macro.
+ */
+#define ovm_get_type_name_func(T) \
+   const static string type_name = #T; \
+   virtual  string get_type_name () { \
+     return type_name; \
+   }
+
+ovm_get_type_name_func(foo);
+
+
+/**
  *  Parameterized Macro VMM Warning.
  *  A parameterized macro - taken from VMM<br>
  */
@@ -406,11 +426,11 @@ class vmm_channel_(T) : public vmm_channel { public:  \
  * This is my package - it has a collection of classes that are included with file inclusion
  *
  */
-package inclpack;
+
 
    #include "test_incl.sv"
 
-endpackage: inclpack
+
 
 
 /**
@@ -418,7 +438,7 @@ endpackage: inclpack
  * This is my package - it has a collection of classes
  *
  */
-package foopack;
+
    /**
     *  Test Class in foo package.
     *  Just a basic class declaration in a class.<br>
@@ -440,7 +460,7 @@ package foopack;
       int m_anint; ///< An Int
    };
 
-endpackage: foopack
+
 
 /**
  * Goo Package - collection of classes.
@@ -448,8 +468,8 @@ endpackage: foopack
  * and it uses another package - foopack::*
  *
  */
-package goopack;
-   import foopack::*;
+
+   
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -462,7 +482,7 @@ package goopack;
       foo_test_class2 m_ftc;  ///< Foo Test Class
    };
 
-endpackage: goopack
+
 
 /**
  * Moo Package - collection of classes.
@@ -470,8 +490,8 @@ endpackage: goopack
  * and it uses another package's class directly: goopack::goo_test_class
  *
  */
-package moopack;
-   import goopack::goo_test_class;
+
+   
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -483,7 +503,7 @@ package moopack;
       int m_anint; ///< An Int
    };
 
-endpackage: moopack
+
 
 /**
  * Doo Package - collection of classes.
@@ -491,8 +511,8 @@ endpackage: moopack
  * and it uses another package: moopack
  *
  */
-package doopack;
-   import moopack;
+
+   
    /**
     *  Test Class in a Package.
     *  Just a basic class declaration in a class.<br>
@@ -504,7 +524,7 @@ package doopack;
       int m_anint; ///< An Int
    };
 
-endpackage: doopack
+
 
 /**
  *  Test Class - Basic.
