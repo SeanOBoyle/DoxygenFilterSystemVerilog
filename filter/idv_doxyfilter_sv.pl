@@ -886,7 +886,7 @@ foreach (@infile) {
    s/\bendcase\s*:\s*\S+/}/;
    s/\bendfunction\s*:\s*\S+/}/;
    s/\bendtask\s*:\s*\S+/}/;
-   s/\bendclocking\s*:\s*\S+/}/;
+   #s/\bendclocking\s*:\s*\S+/}/;
    s/\bendgroup\s*:\s*\S+/}/;
    s/\bend\s*:\s*\S+/}/;
 
@@ -902,7 +902,7 @@ foreach (@infile) {
    s/\bendcase\b/}/;
    s/\bendfunction\b/}/;
    s/\bendtask\b/}/;
-   s/\bendclocking\b/}/;
+   #s/\bendclocking\b/}/;
    s/\bendgroup\b/}/;
    s/\bend\b/}/;
 
