@@ -38,6 +38,7 @@
 #-----------------------------------------------------------------------------
 FILE_PATTERNS          = *.svh *.sv *.cpp *.c *.h
 EXAMPLE_PATTERNS       = *.sv, *.svh
+EXTENSION_MAPPING      = sv=C++ svh=C++
 FILTER_PATTERNS        = *.sv=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl *.svh=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl
 LAYOUT_FILE            = <PATH_DOXYSCR>/doxyfile/idv_doxylayout.xml
 JAVADOC_AUTOBRIEF      = YES
@@ -47,6 +48,7 @@ EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        = <PATH_HOME>/idv/subversion
+STRIP_CODE_COMMENTS    = NO
 INLINE_INFO            = NO
 SHOW_DIRECTORIES       = YES
 WARN_NO_PARAMDOC       = YES
