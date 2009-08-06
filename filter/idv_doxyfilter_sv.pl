@@ -89,6 +89,8 @@ my $ifdef_start = 0;
 my $inline_comment = "";
 my $inline_block_comment = "";
 my $isdpi = 0;
+my $enum_start = 0;
+my $enum = 0;
 my $covergroup = 0;
 my $covergroup_name = "";
 my $constraint = 0;
@@ -632,20 +634,6 @@ foreach (@infile) {
       s/case(.*)\)/case $1) { /;
    }
 
-   # Enumerated Type
-   # SV Enumerated Type looks exactly like C++ enum
-   # Except that C++ enums are always of type int
-   #   SV: [optional type with optional bit width] enum {...} enumname
-   #  C++: enum {...} enumname
-   # Current Strategy:
-   #   - get rid of any optional type information
-   if (/typedef enum/) {
-      s/enum.*?{/enum {/;
-   }
-   else {
-      s/enum.*?{/typedef enum {/;
-   }
-
    # Class
    # A C++ class looks exactly like an SV class with these exceptions:
    #   - derived class different keyword (taken care of above)
@@ -765,7 +753,7 @@ foreach (@infile) {
    #   - to keep the line number references correct we need to put the public on the same line
    #   - if we're not in the body of a method then we can mark public
    #   - if the line is a # macro then skip the print
-   if ($class == 1 && $function_start == 0 && !(/^\s*\#/)) {
+   if ($class == 1 && $enum_start == 0 && $function_start == 0 && !(/^\s*\#/)) {
       if (/\blocal\s+\b/) {
          s/\blocal\b//;
          if ($access_specifier ne "private") {
@@ -787,7 +775,7 @@ foreach (@infile) {
             $access_specifier = "public";
          }
       }
-      elsif ($function == 0) {
+      elsif ($function == 0 && $enum == 0) {
          if ($access_specifier ne "public") {
             print "public: ";
             $access_specifier = "public";
@@ -858,6 +846,42 @@ foreach (@infile) {
    }
    if (/end(task|function)/) {
       $function = 0;
+   }
+
+   # Enumerated Type
+   # SV Enumerated Type looks exactly like C++ enum
+   # Except that C++ enums are always of type int
+   #   SV: [optional type with optional bit width] enum {...} enumname
+   #  C++: enum {...} enumname
+   # Current Strategy:
+   #   - get rid of any optional type information
+   #   - note when in an enum body
+   if (/typedef enum/) {
+      s/enum.*?{/enum {/;
+   }
+   else {
+      s/enum.*?{/enum {/;
+   }
+
+   if ($enum_start == 1) {
+      $enum = 1;
+      $enum_start = 0;
+   }
+
+   if (/enum\s+\{/) {
+      $enum_start = 1;
+   }
+   if ($enum_start) {
+      if (/\}/) {
+         $enum = 0;
+         $enum_start = 0;
+      }
+   }
+   if ($enum == 1) {
+      if (/\}/) {
+         $enum = 0;
+         $enum_start = 0;
+      }
    }
 
    # Named Begin Block
