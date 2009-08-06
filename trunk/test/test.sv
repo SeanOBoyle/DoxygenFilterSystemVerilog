@@ -556,6 +556,18 @@ class test_class_basic;
                             N  ///< N State
                             } mn_enum_t; ///< Bit State Enum Type
 
+   protected enum bit {Z,Y} m_zy; ///< ZY Enumeration
+
+   int m_another_int; ///< Another Public Int
+
+   protected enum int {THIS,
+                       IS,
+                       THE,
+                       ONE
+                      } m_theone; ///< Tough one
+
+   int m_yetanotherint; ///< Yet Another Public Int
+
    alpha_enum_t m_alpha; ///< Alpha State
 	`ifdef FOO
    local mn_enum_t    m_mn;    ///< MN State
