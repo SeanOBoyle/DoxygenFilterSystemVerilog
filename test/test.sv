@@ -568,6 +568,25 @@ class test_class_basic;
 
    int m_yetanotherint; ///< Yet Another Public Int
 
+   protected typedef enum {RTL_REG_ENABLE    = 32'h0002, ///< Register Enable
+                           RTL_REG_INTERRUPT = 32'h0014  ///< Register Interrupt
+                           } rtl_reg_enum_t; ///< Protected Enum Type Register
+   typedef enum {RTL_FIELD_DATA,  ///< Field Data
+                 RTL_FIELD_HOST   ///< Field Host
+                 } rtl_field_enum_t; ///< Public Enum Type Field
+   protected int unsigned m_field_map_lsb [rtl_field_enum_t]
+       =  '{RTL_FIELD_DATA :  0,
+            RTL_FIELD_HOST :  1
+           }; ///< Protected Array with Initialization
+
+   int m_andyetanotherint; ///< Yet Another Public Int
+
+   local int unsigned m_field_map_lsb_b [rtl_field_enum_t]  =  '{RTL_FIELD_DATA  :  0,
+                                                                 RTL_FIELD_HOST  :  1
+                                                                }; ///< Local Array with Initialization
+
+   int m_andandyetanotherint; ///< Yet Another Public Int
+
    alpha_enum_t m_alpha; ///< Alpha State
 	`ifdef FOO
    local mn_enum_t    m_mn;    ///< MN State
