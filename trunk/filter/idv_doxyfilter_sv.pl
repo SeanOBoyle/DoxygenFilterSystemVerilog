@@ -91,6 +91,8 @@ my $inline_block_comment = "";
 my $isdpi = 0;
 my $enum_start = 0;
 my $enum = 0;
+my $ml_assign_start = 0;
+my $ml_assign = 0;
 my $covergroup = 0;
 my $covergroup_name = "";
 my $constraint = 0;
@@ -535,7 +537,7 @@ foreach (@infile) {
       else {
          $size = $num1 - $num2 + 1;
       }
-      s/\[(\d):(\d)\]/[$size]/
+      s/\[(\d):(\d)\]/[$size]/;
    }
 
    # Timescale / Timeunit / TimePrecision:
@@ -573,6 +575,7 @@ foreach (@infile) {
    # Deal with Stuff that C++ Does Have -- convert the syntax from SV to C++
    #
    #-----------------------------------------------------------------------------
+
    # DPI Imports
    # A DPI Import is just another method available at the scope where the import occured
    # Looking for:
@@ -753,7 +756,7 @@ foreach (@infile) {
    #   - to keep the line number references correct we need to put the public on the same line
    #   - if we're not in the body of a method then we can mark public
    #   - if the line is a # macro then skip the print
-   if ($class == 1 && $enum_start == 0 && $function_start == 0 && !(/^\s*\#/)) {
+   if ($class == 1 && $enum_start == 0 && $function_start == 0 && $ml_assign_start == 0 && !(/^\s*\#/)) {
       if (/\blocal\s+\b/) {
          s/\blocal\b//;
          if ($access_specifier ne "private") {
@@ -775,7 +778,7 @@ foreach (@infile) {
             $access_specifier = "public";
          }
       }
-      elsif ($function == 0 && $enum == 0) {
+      elsif ($function == 0 && $enum == 0 && $ml_assign == 0) {
          if ($access_specifier ne "public") {
             print "public: ";
             $access_specifier = "public";
@@ -848,27 +851,41 @@ foreach (@infile) {
       $function = 0;
    }
 
-   # Enumerated Type
-   # SV Enumerated Type looks exactly like C++ enum
+   # Enumerated Typedef
+   # SV Enumerated Typedef looks exactly like C++ enum
    # Except that C++ enums are always of type int
-   #   SV: [optional type with optional bit width] enum {...} enumname
-   #  C++: enum {...} enumname
+   #   SV: typedef enum [type]  {...} enumtypename
+   #  C++: typedef enum [optional enumtypename] [: type] {...} enumtypename
    # Current Strategy:
    #   - get rid of any optional type information
    #   - note when in an enum body
    if (/typedef enum/) {
-      s/enum.*?{/enum {/;
+      if (/\benum\b\s+{/) {}
+      else {
+         s/\benum\b(.*?){/enum {/;
+      }
    }
    else {
-      s/enum.*?{/enum {/;
+      if (/\benum\b\s+{/) {}
+      else {
+         s/\benum\b(.*?){/enum {/;
+      }
    }
 
+   # Enumerated Type
+   # SV Enumerated Typedef looks similar to C++ enum - but name is swapped
+   # Except that C++ enums are always of type int
+   #   SV: enum [optional type with optional bit width]  {...} enumname
+   #  C++: enum enumname {...}
+   # Current Strategy:
+   #   - get rid of any optional type information
+   #   - note when in an enum body
    if ($enum_start == 1) {
       $enum = 1;
       $enum_start = 0;
    }
 
-   if (/enum\s+\{/) {
+   if (/\benum\b\s+\{/) {
       $enum_start = 1;
    }
    if ($enum_start) {
@@ -882,6 +899,58 @@ foreach (@infile) {
          $enum = 0;
          $enum_start = 0;
       }
+   }
+
+
+   # Multiline Assignment
+   # Need to know if an assignment is multiline to catch local/protected inline initilizations
+   # Current Strategy:
+   #   - flag inline assignments to end of statement semicolon that are in a class
+
+   if ($ml_assign_start == 1) {
+      $ml_assign = 1;
+      $ml_assign_start = 0;
+   }
+
+   # Look for multiline only when:
+   #  - in a class
+   #  - not in an enum
+   #  - not in a function
+   #  - not a line that starts a macro
+   #  - current line not empty
+   #  - current line not empty macro line
+   if ($class == 1 && $enum_start == 0 && $function_start == 0 && !(/^\s*\#/) && /^\s*\S+/ && !(/^\s*\\\s*$/)) {
+      if (/=/ && !/==/) { #assignment
+         if (!/;/) {
+            $ml_assign_start = 1;
+            #print STDERR "mlstart: ".$_;
+         }
+      }
+      if (!/;/) {
+         if ($infile[$infile_line] =~ /=/) { # assignment starts on next line
+            if ($infile[$infile_line] =~ /==/) {}
+            else {
+               $ml_assign_start = 1;
+               #print STDERR "Yo! ".$infile[$infile_line];
+            }
+         }
+      }
+
+      if ($ml_assign_start) {
+         if (/;/) {
+            $ml_assign = 0;
+            $ml_assign_start = 0;
+         }
+      }
+      if ($ml_assign == 1) {
+         if (/;/) {
+            $ml_assign = 0;
+            $ml_assign_start = 0;
+         }
+      }
+   }
+   if ($ml_assign) {
+      #print STDERR "ml: ".$_;
    }
 
    # Named Begin Block
