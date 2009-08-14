@@ -568,6 +568,15 @@ class test_class_basic;
 
    int m_yetanotherint; ///< Yet Another Public Int
 
+  protected typedef enum
+    {// Stuff
+     WHAT,
+     ABOUT,
+     ME
+     } m_thetwo; ///< Another tough one
+
+   int m_ohyetanotherint; ///< Oh, Yet Another Public Int
+
    protected typedef enum {RTL_REG_ENABLE    = 32'h0002, ///< Register Enable
                            RTL_REG_INTERRUPT = 32'h0014  ///< Register Interrupt
                            } rtl_reg_enum_t; ///< Protected Enum Type Register
@@ -588,10 +597,10 @@ class test_class_basic;
    int m_andandyetanotherint; ///< Yet Another Public Int
 
    alpha_enum_t m_alpha; ///< Alpha State
-	`ifdef FOO
+    `ifdef FOO
    local mn_enum_t    m_mn;    ///< MN State
-	`endif
-	bit    m_public_var; ///< A public variable
+    `endif
+    bit    m_public_var; ///< A public variable
 
    /**
     * Small Int Constraint.

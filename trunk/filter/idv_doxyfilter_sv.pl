@@ -885,7 +885,7 @@ foreach (@infile) {
       $enum_start = 0;
    }
 
-   if (/\benum\b\s+\{/) {
+   if (/\benum\b/) {
       $enum_start = 1;
    }
    if ($enum_start) {
