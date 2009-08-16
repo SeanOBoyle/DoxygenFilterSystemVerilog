@@ -95,14 +95,14 @@ cd -
 mv ../../../SVtimersDocs/tags/1.7.0/timers-* upload/.
 
 # Make SV Timers Docs
-cd ../../../SVresetDocs/tags/1.0.0/
+cd ../../../SVresetDocs/tags/1.0.1/
 echo ""
 echo "Making Reset 1.0.0 Docs"
 sleep 5
 make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.1
 make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.1
 cd -
-mv ../../../SVresetDocs/tags/1.0.0/SVreset-* upload/.
+mv ../../../SVresetDocs/tags/1.0.1/SVreset-* upload/.
 
 # Make Doxygen Test Docs
 echo ""
