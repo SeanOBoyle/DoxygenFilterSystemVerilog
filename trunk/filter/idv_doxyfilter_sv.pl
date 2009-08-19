@@ -785,6 +785,11 @@ foreach (@infile) {
          }
       }
    }
+   if (/^\s*\#endif/) {
+      # if we just exited an if(n)def/endif block we don't know the current state of public/protected/private
+      $access_specifier = "unknown";
+   }
+
 
    #-----------------------------------------------------------------------------
    #
@@ -919,7 +924,7 @@ foreach (@infile) {
    #  - not a line that starts a macro
    #  - current line not empty
    #  - current line not empty macro line
-   if ($class == 1 && $enum_start == 0 && $function_start == 0 && !(/^\s*\#/) && /^\s*\S+/ && !(/^\s*\\\s*$/)) {
+   if ($class == 1 && $enum_start == 0 && $function_start == 0 && !(/^\s*\#/) && /^\s*\S+/ && !(/^\s*\/\/\s*$/)) {
       if (/=/ && !/==/) { #assignment
          if (!/;/) {
             $ml_assign_start = 1;

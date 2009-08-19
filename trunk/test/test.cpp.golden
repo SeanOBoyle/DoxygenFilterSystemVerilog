@@ -600,7 +600,14 @@ public:
     #ifdef FOO
 private:     mn_enum_t    m_mn;    ///< MN State
     #endif
-public:     bit    m_public_var; ///< A public variable
+public:    bit    m_public_var; ///< A public variable
+
+   /// Protected class instance with Initialization
+protected:     incl_test_class m_test_class = new();
+   #ifdef BOO
+public:    int m_publicinifdef;  ///< Public Int in an ifdef
+   #endif
+public:    int m_onemorepublicint; ///< One More Public Int (right after close of endif)
 
    /**
     * Small Int Constraint.
