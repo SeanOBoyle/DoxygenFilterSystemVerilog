@@ -1068,6 +1068,7 @@ endclass
  *
  */
 class mytemplateclass2 #(type T=custom) extends mytemplateclass#(bit);
+
    int m_myint; ///< Description of My Int
    bit m_mybit; ///< Description of My Bit
 endclass
@@ -1107,6 +1108,10 @@ endclass
  *
  */
 class mytemplateclass5 #(int B=3);
+   vmm_tlm_analysis_export_inp#(vmm_sb_ds_typed#(INP,EXP),INP) inp_ap = new(this,"vmm_sb_ds_typed input analysis export",99,0);
+   vmm_tlm_analysis_export_exp#(vmm_sb_ds_typed#(INP,EXP),EXP) exp_ap = new(this,"vmm_sb_ds_typed expect analysis export",99,0);
+
+   extern virtual task apply(vmm_channel_typed#(T) channel, ref int unsigned n_insts);
    int m_myint;
    bit m_mybit;
 endclass
@@ -1254,6 +1259,81 @@ endclass
 class abc #(type f = null, type g = z, type h = x) extends def #(f);
    int m_myint;
 endclass
+
+interface foo_interface_a  #(
+    parameter ADDR_WIDTH =  'd32
+    )
+    ( input logic a,
+      output logic b);
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_a
+
+interface foo_interface_b #( parameter ADDR_WIDTH =  'd32 ) ( input logic a,  output logic b);
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_b
+
+interface foo_interface_c #( parameter ADDR_WIDTH =  'd32 );
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_c
+
+interface foo_interface_d #( parameter ADDR_WIDTH =  'd32 )
+ ( input logic a,
+   output logic b
+   );
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_d
+
+interface foo_interface_e #(
+   parameter ADDR_WIDTH =  'd32
+    )
+ ( input logic a,
+   output logic b
+   );
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_e
+
+interface foo_interface_f
+   #(
+    parameter ADDR_WIDTH =  'd32
+    ) (input logic a, output logic b);
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_f
+
+interface foo_interface_g
+   #(
+    parameter ADDR_WIDTH =  'd32
+    );
+
+  timeunit      1ns;
+  timeprecision 1ns;
+
+  logic [ADDR_WIDTH-1:0] addr_bus;
+endinterface : foo_interface_g
+
 
 `endif
 

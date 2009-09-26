@@ -1068,6 +1068,7 @@ template  <typename T=int> class mytemplateclass : public test_class_basic { pub
  *
  */
 template  <typename T=custom> class mytemplateclass2 : public mytemplateclass <bit>  { public: 
+
    int m_myint; ///< Description of My Int
    bit m_mybit; ///< Description of My Bit
 };
@@ -1107,6 +1108,10 @@ template  <typename T=int> class mytemplateclass4   { public:
  *
  */
 template  <int B=3> class mytemplateclass5   { public: 
+   vmm_tlm_analysis_export_inp <vmm_sb_ds_typed<INP,EXP> ,INP>  inp_ap = new(this,"vmm_sb_ds_typed input analysis export",99,0);
+   vmm_tlm_analysis_export_exp <vmm_sb_ds_typed<INP,EXP> ,EXP>  exp_ap = new(this,"vmm_sb_ds_typed expect analysis export",99,0);
+
+   virtual task apply(vmm_channel_typed <T>  channel, ref int unsigned n_insts);
    int m_myint;
    bit m_mybit;
 };
@@ -1254,6 +1259,81 @@ class myselectclass
 template  <typename f = null, typename g = z, typename h = x> class abc : public def <f>  { public: 
    int m_myint;
 };
+
+/** @ingroup SVinterface */template <
+    parameter ADDR_WIDTH =  0d32
+    > interface foo_interface_a 
+    ( input logic a,
+      output logic b) {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_b( input logic a,  output logic b) {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_c() {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_d
+ ( input logic a,
+   output logic b
+   ) {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template <
+   parameter ADDR_WIDTH =  0d32
+    > interface foo_interface_e 
+ ( input logic a,
+   output logic b
+   ) {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template
+   <
+    parameter ADDR_WIDTH =  0d32
+    > interface foo_interface_f  (input logic a, output logic b) {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
+/** @ingroup SVinterface */template
+   <
+    parameter ADDR_WIDTH =  0d32
+    > interface foo_interface_g () {
+
+
+
+
+  logic <ADDR_WIDTH-1:0>  addr_bus;
+}
+
 
 #endif
 

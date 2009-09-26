@@ -16,7 +16,7 @@
 #
 #-----------------------------------------------------------------------------
 # Title:        Doxygen Generating Makefile for Test SV Files
-# Description:  This makefile generates the doxygen documentation for the 
+# Description:  This makefile generates the doxygen documentation for the
 #               source in 3 steps.  1) generate the SV template from the base
 #               and SV delta file 2) generate the project doxyfile from the
 #               SV template and the project delta file 3) generate docs
@@ -47,14 +47,14 @@
 PATH_ROOT = ..
 PATH_DOXYSCR = $(PATH_ROOT)
 
-PATH_HOME = $(HOME)
-PATH_PRJ = $(PATH_ROOT)
+PATH_HOME = $(shell `cd ..; pwd`)
+PATH_PRJ =  $(PATH_ROOT)
 DOXYGEN = doxygen
 BROWSER = firefox
 DOTEST = ./dotest.pl
 DOXYFILE_BASE = $(PATH_DOXYSCR)/doxyfile/Doxyfile.template
 DOXYFILE_SVDELT = $(PATH_DOXYSCR)/doxyfile/idv_doxyfile_sv.delta
-DOXYFILE_TMPLCONV = $(PATH_DOXYSCR)/scripts/idv_doxyfile_tmplconv.pl 
+DOXYFILE_TMPLCONV = $(PATH_DOXYSCR)/scripts/idv_doxyfile_tmplconv.pl
 DOXYFILE_TMPL = ./Doxyfile_sv.template
 DOXYFILE_DELT = ./Doxyfile.delta
 DOXYFILE_OUT = ./Doxyfile.output
@@ -69,7 +69,7 @@ default: docs
 test:
 	$(DOTEST)
 
-test_package: 
+test_package:
 	$(DOTEST) --package_mode
 
 # Create the Template SystemVerilog Doxyfile
@@ -87,7 +87,7 @@ docs: $(DOXYFILE_OUT)
 	$(DOXYGEN) $(DOXYFILE_OUT)
 
 # Show the Documentation
-showdocs: 
+showdocs:
 	$(BROWSER) $(DOC_PATH)/index.html
 
 .PHONY :	docs clean doxyfile showdocs
