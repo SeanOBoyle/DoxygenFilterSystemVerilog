@@ -9,33 +9,33 @@ cd ../../../OVMdocs/tags/1.8.0/
 echo ""
 echo "Making OVM 1.0.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.2
 echo ""
 echo "Making OVM 1.0.1 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.1 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.1 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.1 DOXY_VER=2.5.2
 echo ""
 echo "Making OVM 1.1.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.1.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.1.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.1.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.1.0 DOXY_VER=2.5.2
 echo ""
 echo "Making OVM 2.0.0 Docs"
 sleep 5
-make clean PROJ_NUM=2.0.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=2.0.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=2.0.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=2.0.0 DOXY_VER=2.5.2
 echo ""
 echo "Making OVM 2.0.1 Docs"
 sleep 5
-make clean PROJ_NUM=2.0.1 DOXY_VER=2.5.1
-make docs PROJ_NUM=2.0.1 DOXY_VER=2.5.1
+make clean PROJ_NUM=2.0.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=2.0.1 DOXY_VER=2.5.2
 echo ""
 echo "Making OVM 2.0.2 Docs"
 sleep 5
-make clean PROJ_NUM=2.0.2 DOXY_VER=2.5.1
-make docs PROJ_NUM=2.0.2 DOXY_VER=2.5.1
+make clean PROJ_NUM=2.0.2 DOXY_VER=2.5.2
+make docs PROJ_NUM=2.0.2 DOXY_VER=2.5.2
 cd -
 mv ../../../OVMdocs/tags/1.8.0/ovm-* upload/.
 
@@ -44,18 +44,23 @@ cd ../../../VMMdocs/tags/1.6.0/
 echo ""
 echo "Making VMM 1.0.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.2
 echo ""
 echo "Making VMM 1.0.1 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.1 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.1 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.1 DOXY_VER=2.5.2
 echo ""
 echo "Making VMM 1.1.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.1.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.1.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.1.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.1.0 DOXY_VER=2.5.2
+echo ""
+echo "Making VMM 1.1.1 Docs"
+sleep 5
+make clean PROJ_NUM=1.1.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.1.1 DOXY_VER=2.5.2
 cd -
 mv ../../../VMMdocs/tags/1.6.0/vmm-* upload/.
 
@@ -64,8 +69,8 @@ cd ../../../TealTrussDocs/tags/1.6.0/
 echo ""
 echo "Making Teal Truss 1.62c Docs"
 sleep 5
-make clean PROJ_NUM=1.62c DOXY_VER=2.5.1
-make docs PROJ_NUM=1.62c DOXY_VER=2.5.1
+make clean PROJ_NUM=1.62c DOXY_VER=2.5.2
+make docs PROJ_NUM=1.62c DOXY_VER=2.5.2
 cd -
 mv ../../../TealTrussDocs/tags/1.6.0/teal_truss-* upload/.
 
@@ -74,23 +79,23 @@ cd ../../../SVtimersDocs/tags/1.7.0/
 echo ""
 echo "Making Timers 1.3.1 Docs"
 sleep 5
-make clean PROJ_NUM=1.3.1 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.3.1 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.3.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.3.1 DOXY_VER=2.5.2
 echo ""
 echo "Making Timers 1.2.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.2.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.2.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.2.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.2.0 DOXY_VER=2.5.2
 echo ""
 echo "Making Timers 1.1.1 Docs"
 sleep 5
-make clean PROJ_NUM=1.1.1 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.1.1 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.1.1 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.1.1 DOXY_VER=2.5.2
 echo ""
 echo "Making Timers 1.0.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.2
 cd -
 mv ../../../SVtimersDocs/tags/1.7.0/timers-* upload/.
 
@@ -99,8 +104,8 @@ cd ../../../SVresetDocs/tags/1.0.1/
 echo ""
 echo "Making Reset 1.0.0 Docs"
 sleep 5
-make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.1
-make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.1
+make clean PROJ_NUM=1.0.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.0.0 DOXY_VER=2.5.2
 cd -
 mv ../../../SVresetDocs/tags/1.0.1/SVreset-* upload/.
 

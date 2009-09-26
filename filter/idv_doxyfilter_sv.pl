@@ -110,6 +110,7 @@ my $derived_class = 0;
 my $template_class = 0;
 my $template_class_drop = 0;
 my $template = 0;
+my $template_inline_assign = "";
 my $access_specifier = "";
 my $function = 0;
 my $function_start = 0;
@@ -462,9 +463,12 @@ foreach (@infile) {
    # ... interface foo;
    # ... interface foo(...);
    # ... interface foo(...
-   # ... interface #(...) foo(...);
-   # ... interface #(...
-   #                 ...) foo (...);
+   # ... interface foo #(...) (...);
+   # ... interface foo #(...);
+   # ... interface foo #(...
+   #                 ...)  (...);
+   # ... interface foo #(...
+   #                 ...);
    # Current Strategy:
    #   - make look like C++ function that returns type interface
    if (s/\b(interface|module)(\s+)/\/** \@ingroup SV$1 *\/$1$2/) {
@@ -487,15 +491,26 @@ foreach (@infile) {
 
       if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
       elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\);/template <$3> $1 $2() {/) {}
+      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)/template <$3> $1 $2/) {}
       elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/template </) {
          $interface_start = 1;
          $interface_name = $1." ".$2;
          $interface_template_start = 1;
       }
+      elsif (/\b(interface|module)\s+(\w+)/) {
+         if ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
+            s/\b(interface|module)\s+(\w+)/template/;
+            $interface_start = 1;
+            $interface_name = $1." ".$2;
+            $interface_template_start = 1;
+         }
+      }
       else {};
    }
    if ($interface_template_start) {
       if (s/\)/> $interface_name /) {
+         $template=0;
          $interface_template_start = 0;
       }
    }
@@ -505,7 +520,7 @@ foreach (@infile) {
          $interface_start = 0;
          $interface_template_start = 0;
       }
-      elsif (s/;/) {/) {
+      elsif (s/;/() {/) {
          $interface_start = 0;
          $interface_template_start = 0;
       }
@@ -670,10 +685,26 @@ foreach (@infile) {
    # Current Strategy:
    #   - keep track of opening and closing #( )
    #   - convert to C++ template instances < >
+   # TODO: replace this routine with a better routine that steps through each opening / closing paren
+
+   # first take care of the easy ones
+   s/\#\s*\((\w+)\)/<$1> /;
+
+   # then take care of the tough ones
    while (s/\#\s*\(/</) {
       $template++;
       #print STDERR "Template Count = $template at line $infile_line\n";
    }
+
+   # If template is constructed inline the extra parens will confuse the parser
+   # strip the inline construction and return it after angle bracket replacement
+   if ($template) {
+      if (/=\s*new/) {
+         s/(=.*$)/=/;
+         $template_inline_assign = $1;
+      }
+   }
+
    if ($template) {
       $_ = scalar reverse; # reverse to search right to left
       while (s/\)/ >/) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
@@ -685,6 +716,11 @@ foreach (@infile) {
       }
       $_ = scalar reverse;
       #print STDERR "Out: Template Count = $template at line $infile_line\n";
+   }
+
+   if ($template_inline_assign) {
+     s/=/$template_inline_assign/;
+     $template_inline_assign = "";
    }
 
    if (/\bclass(\s+)(\S+)/) { # was /class(\s+)(\w+)/ -- but need to support class definition in macros
