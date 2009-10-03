@@ -109,7 +109,7 @@ my $class_start = 0;
 my $derived_class = 0;
 my $template_class = 0;
 my $template_class_drop = 0;
-my $template = 0;
+my $template_brackets = 0;
 my $template_inline_assign = "";
 my $access_specifier = "";
 my $function = 0;
@@ -127,7 +127,90 @@ GetOptions ('package_mode' => \$package_mode # experimental feature - add suppor
            );
 
 my @infile = <>;  # slurp from STDIN
+
+my $angle_bracket_count = 0;
+my $paren_count = 0;
+
 my $infile_line = 0;
+# Process the SV File Line-by-Line
+# First Pass - Convert #() to <>
+foreach (@infile) {
+   $inline_comment = "";
+   $infile_line++;
+
+   # Skip Comments
+   # TODO - this is the same comment routine as in the main section - make in to subroutine
+   if (!$blockcomment) {
+      if (s/\/\/(.*)\\/\/\/\\/) {
+         $inline_comment = $1;
+      }
+      elsif (s/\/\/(.*)/\/\//) {
+         $inline_comment = $1;
+      }
+      elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
+         $inline_block_comment = $1;
+      }
+   }
+
+   if ((!$inline_block_comment)&&(/\/\*/)) {
+      $blockcomment = 1;
+   }
+
+   if ($blockcomment) {
+      if (/\*\//) { # found the end of a block comment
+         $blockcomment = 0;
+      }
+      next;  # skip to next line of file
+   }
+
+   # Find the #(
+   # if the line has a start the iterate the line
+   # if we are in an angle bracket then iterate the line
+   if ((/\#\(/) || ($angle_bracket_count > 0)) {
+     my $line = "";
+     my @chars = split('');
+     my $char_num = 0;
+     foreach (@chars) {
+        #print(STDERR "Char: ".$chars[$char_num]."\n");
+        if (($chars[$char_num] eq "#") && ($chars[$char_num+1] eq "(")) {
+           $chars[$char_num] = "<";
+           $chars[$char_num+1] = "";
+           $angle_bracket_count++;
+        }
+        elsif (($angle_bracket_count > 0) && ($chars[$char_num] eq "(")) {
+           $paren_count++;
+        }
+        elsif (($angle_bracket_count > 0) && ($paren_count <= 0) && ($chars[$char_num] eq ")")) {
+           $chars[$char_num] = "> ";
+           $angle_bracket_count--;
+        }
+        elsif (($angle_bracket_count > 0) && ($chars[$char_num] eq ")")) {
+           $paren_count--;
+        }
+
+        # reassemble the line
+        $line = $line.$chars[$char_num];
+        $char_num++;
+     }
+     # Put the back
+     $_ = $line;
+   }
+
+   # Return the Inline Comment to the End of the Line
+   # NOTE: doxygen cannot handle an inline comment in a macro -- SV specifies that those comments should be ignored
+   if ($inline_comment ne "") {
+      s/\/\//\/\/$inline_comment/;
+   }
+   $inline_comment = "";
+   if ($inline_block_comment ne "") {
+      s/\/\*\*\//\/\*$inline_block_comment\*\//;
+      $inline_block_comment = "";
+   }
+
+}
+
+
+$infile_line = 0;
 # Process the SV File Line-by-Line
 foreach (@infile) {
    $inline_comment = "";
@@ -249,6 +332,19 @@ foreach (@infile) {
    }
    else {
       $str_back = "";
+   }
+
+   # Keep Track of Where we are in Angle Brackets
+   if (/</ || />/) {
+     my @chars = split('');
+     foreach (@chars) {
+        if ($_ eq "<") {
+           $template_brackets++;
+        }
+        elsif ($_ eq ">") {
+           $template_brackets--;
+        }
+     }
    }
 
    #-----------------------------------------------------------------------------
@@ -489,17 +585,13 @@ foreach (@infile) {
       }
       else {s/\b(interface|module)\s+(\w+);/$1 $2();/;}
 
-      if (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)\)/template <$3> $1 $2($4)/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)\s*\((.*?)/template <$3> $1 $2($4/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\);/template <$3> $1 $2() {/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\((.*)\)/template <$3> $1 $2/) {}
-      elsif (s/\b(interface|module)\s+(\w+)\s*\#\s*\(/template </) {
+      if (s/\b(interface|module)\s+(\w+)\s*</template </) {
          $interface_start = 1;
          $interface_name = $1." ".$2;
          $interface_template_start = 1;
       }
       elsif (/\b(interface|module)\s+(\w+)/) {
-         if ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
+         if ($infile[$infile_line] =~ /^(\s*?)</) { # template starts on next line
             s/\b(interface|module)\s+(\w+)/template/;
             $interface_start = 1;
             $interface_name = $1." ".$2;
@@ -509,8 +601,7 @@ foreach (@infile) {
       else {};
    }
    if ($interface_template_start) {
-      if (s/\)/> $interface_name /) {
-         $template=0;
+      if (s/>/> $interface_name/) {
          $interface_template_start = 0;
       }
    }
@@ -518,10 +609,12 @@ foreach (@infile) {
    if ($interface_start) {
       if (s/\)\s*;/) {/) {
          $interface_start = 0;
+         $template_brackets = 0;
          $interface_template_start = 0;
       }
       elsif (s/;/() {/) {
          $interface_start = 0;
+         $template_brackets = 0;
          $interface_template_start = 0;
       }
    }
@@ -678,50 +771,7 @@ foreach (@infile) {
    s/\btype REQ=int,RSP=int/typename REQ=int, typename RSP=int/; # HACK: support for OVM weirdness
 
    # Apparently a space between the class name and the parameterized list is not required - so let's add one - since that's what the rest of this filter expects
-   s/(\w)(\#\()/$1 $2/;
-
-   # Parameterized Class Usage
-   #
-   # Current Strategy:
-   #   - keep track of opening and closing #( )
-   #   - convert to C++ template instances < >
-   # TODO: replace this routine with a better routine that steps through each opening / closing paren
-
-   # first take care of the easy ones
-   s/\#\s*\((\w+)\)/<$1> /;
-
-   # then take care of the tough ones
-   while (s/\#\s*\(/</) {
-      $template++;
-      #print STDERR "Template Count = $template at line $infile_line\n";
-   }
-
-   # If template is constructed inline the extra parens will confuse the parser
-   # strip the inline construction and return it after angle bracket replacement
-   if ($template) {
-      if (/=\s*new/) {
-         s/(=.*$)/=/;
-         $template_inline_assign = $1;
-      }
-   }
-
-   if ($template) {
-      $_ = scalar reverse; # reverse to search right to left
-      while (s/\)/ >/) { #NOTE: in C++ right angle brackets '>>' must be separated with whitespace - so we add that here
-         $template--;
-         if ($template <= 0) {
-            last; #break
-         }
-         #print STDERR "Template Count = $template at line $infile_line\n";
-      }
-      $_ = scalar reverse;
-      #print STDERR "Out: Template Count = $template at line $infile_line\n";
-   }
-
-   if ($template_inline_assign) {
-     s/=/$template_inline_assign/;
-     $template_inline_assign = "";
-   }
+   s/(\w)(<)/$1 $2/;
 
    if (/\bclass(\s+)(\S+)/) { # was /class(\s+)(\w+)/ -- but need to support class definition in macros
       $class_start = 1;
@@ -749,27 +799,28 @@ foreach (@infile) {
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
-      elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
+      elsif ($infile[$infile_line] =~ /^(\s*?)</) { # template starts on next line
          $template_class = 1;
          s/class(\s+)(\S+)/template /;
       }
 
-      if ($template_class == 1 && $template == 0 && $template_class_drop == 0) {
+      if ($template_class == 1 && $template_brackets == 0 && $template_class_drop == 0) {
          #print STDERR "Found ".$classname." at line $infile_line\n";
          if (s/(.*)>\s+extends\s+(.*)$/$1> class $classname extends $2/) {
             $template_class_drop = 1; # dropped class name
          }
          elsif (s/(.*)>(.*)$/$1> class $classname $2/) {
-            $template_class_drop = 1; #dropped class name
-         }
-         elsif ($infile[$infile_line] =~ /^(\s*?)\#\s*\(/) { # template starts on next line
+         #print STDERR "Current Line: >".$_."\n";
+             $template_class_drop = 1; #dropped class name
+            #print (STDERR "Dropped\n");
+          }
+         elsif ($infile[$infile_line] =~ /^(\s*?)</) { # template starts on next line
             $template_class = 1;
          }
          else {
             $template_class = 0;
          }
       }
-
    }
 
    if (/\bendclass\b/) {
@@ -777,6 +828,7 @@ foreach (@infile) {
       $derived_class = 0;
       $template_class = 0;
       $template_class_drop = 0;
+      $template_brackets = 0;
       $class = 0; # we're not in a class body
    }
 
