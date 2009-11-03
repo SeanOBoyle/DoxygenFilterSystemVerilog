@@ -964,7 +964,7 @@ bit mybit
  *  @param foo logic - description of parameter foo
  *
  */
-/** @ingroup SVinterface */template <WIDTH=8> interface bus_C(input bit clk, output logic foo) {
+/** @ingroup SVinterface */template <WIDTH=8> interface bus_C  (input bit clk, output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
       modport test (input enable);
@@ -979,7 +979,7 @@ bit mybit
  *  @param foo logic - description of parameter foo
  *
  */
-/** @ingroup SVinterface */template <WIDTH=8> interface bus_D(input bit clk,
+/** @ingroup SVinterface */template <WIDTH=8> interface bus_D  (input bit clk,
                             output logic foo) {
       logic <WDTH-1:0>  cmd;
       logic enable;
@@ -1272,7 +1272,7 @@ template  <typename f = null, typename g = z, typename h = x> class abc : public
   logic <ADDR_WIDTH-1:0>  addr_bus;
 }
 
-/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_b( input logic a,  output logic b) {
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_b  ( input logic a,  output logic b) {
 
 
 
@@ -1280,7 +1280,7 @@ template  <typename f = null, typename g = z, typename h = x> class abc : public
   logic <ADDR_WIDTH-1:0>  addr_bus;
 }
 
-/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_c() {
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_c () {
 
 
 
@@ -1288,7 +1288,7 @@ template  <typename f = null, typename g = z, typename h = x> class abc : public
   logic <ADDR_WIDTH-1:0>  addr_bus;
 }
 
-/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_d
+/** @ingroup SVinterface */template < parameter ADDR_WIDTH =  0d32 > interface foo_interface_d 
  ( input logic a,
    output logic b
    ) {
