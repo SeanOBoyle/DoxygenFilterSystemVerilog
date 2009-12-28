@@ -36,6 +36,16 @@ echo "Making OVM 2.0.2 Docs"
 sleep 5
 make clean PROJ_NUM=2.0.2 DOXY_VER=2.5.2
 make docs PROJ_NUM=2.0.2 DOXY_VER=2.5.2
+echo ""
+echo "Making OVM 2.0.3 Docs"
+sleep 5
+make clean PROJ_NUM=2.0.3 DOXY_VER=2.5.2
+make docs PROJ_NUM=2.0.3 DOXY_VER=2.5.2
+echo ""
+echo "Making OVM 2.1.0 Docs"
+sleep 5
+make clean PROJ_NUM=2.1.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=2.1.0 DOXY_VER=2.5.2
 cd -
 mv ../../../OVMdocs/tags/1.8.0/ovm-* upload/.
 
@@ -61,6 +71,12 @@ echo "Making VMM 1.1.1 Docs"
 sleep 5
 make clean PROJ_NUM=1.1.1 DOXY_VER=2.5.2
 make docs PROJ_NUM=1.1.1 DOXY_VER=2.5.2
+echo ""
+echo "Making VMM 1.2.0 Docs"
+sleep 5
+make clean PROJ_NUM=1.2.0 DOXY_VER=2.5.2
+make docs PROJ_NUM=1.2.0 DOXY_VER=2.5.2
+
 cd -
 mv ../../../VMMdocs/tags/1.6.0/vmm-* upload/.
 
