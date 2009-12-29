@@ -5,7 +5,7 @@ rm -rf upload
 mkdir upload
 
 # Make OVM Docs
-cd ../../../OVMdocs/tags/1.8.0/
+cd ../../../OVMdocs/tags/1.8.1/
 echo ""
 echo "Making OVM 1.0.0 Docs"
 sleep 5
@@ -47,10 +47,10 @@ sleep 5
 make clean PROJ_NUM=2.1.0 DOXY_VER=2.6.0
 make docs PROJ_NUM=2.1.0 DOXY_VER=2.6.0
 cd -
-mv ../../../OVMdocs/tags/1.8.0/ovm-* upload/.
+mv ../../../OVMdocs/tags/1.8.1/ovm-* upload/.
 
 # Make VMM Docs
-cd ../../../VMMdocs/tags/1.6.0/
+cd ../../../VMMdocs/tags/1.6.1/
 echo ""
 echo "Making VMM 1.0.0 Docs"
 sleep 5
@@ -78,7 +78,7 @@ make clean PROJ_NUM=1.2.0 DOXY_VER=2.6.0
 make docs PROJ_NUM=1.2.0 DOXY_VER=2.6.0
 
 cd -
-mv ../../../VMMdocs/tags/1.6.0/vmm-* upload/.
+mv ../../../VMMdocs/tags/1.6.1/vmm-* upload/.
 
 # Make Teal Trus Docs
 cd ../../../TealTrussDocs/tags/1.6.0/
