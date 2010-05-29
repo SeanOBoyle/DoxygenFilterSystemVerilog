@@ -144,11 +144,11 @@ foreach (@infile) {
       if (s/\/\/(.*)\\/\/\/\\/) {
          $inline_comment = $1;
       }
-      elsif (s/\/\/(.*)/\/\//) {
-         $inline_comment = $1;
-      }
       elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
+      }
+      elsif (s/\/\/(.*)/\/\//) {
+         $inline_comment = $1;
       }
    }
 
@@ -241,12 +241,13 @@ foreach (@infile) {
       if (s/\/\/(.*)\\/\/\/\\/) {
          $inline_comment = $1;
       }
-      elsif (s/\/\/(.*)/\/\//) {
-         $inline_comment = $1;
-      }
       elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
       }
+      elsif (s/\/\/(.*)/\/\//) {
+         $inline_comment = $1;
+      }
+
    }
 
    # Block Comment Start
