@@ -45,6 +45,8 @@
  *
  */
 
+ /* DollarId: //depot/path/to/my/test.sv#3 Dollar */
+
 #ifndef TEST__SV
 #define TEST__SV
 
