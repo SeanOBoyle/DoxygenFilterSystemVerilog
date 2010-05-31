@@ -163,6 +163,9 @@ foreach (@infile) {
       next;  # skip to next line of file
    }
 
+   # Fixup any '# ('  business;  or '#   (' etc etc
+   s/\#\s+\(/\#\(/;
+
    # Find the #(
    # if the line has a start the iterate the line
    # if we are in an angle bracket then iterate the line
