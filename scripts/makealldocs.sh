@@ -5,7 +5,7 @@ rm -rf upload
 mkdir upload
 
 # Make UVM Docs
-cd ../../../OVMdocs/tags/1.0.0/
+cd ../../../UVMdocs/tags/1.0.0/
 echo ""
 echo "Making UVM 1.0.ea Docs"
 sleep 5
@@ -14,7 +14,7 @@ make docs PROJ_NUM=1.0.ea DOXY_VER=2.6.2
 echo ""
 echo "Moving UVM Docs"
 cd -
-mv ../../../VMMdocs/tags/1.6.2/vmm-* upload/.
+mv ../../../UVMdocs/tags/1.0.0/uvm-* upload/.
 
 # Make OVM Docs
 cd ../../../OVMdocs/tags/1.8.1/
