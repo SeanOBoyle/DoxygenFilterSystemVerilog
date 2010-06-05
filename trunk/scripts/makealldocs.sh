@@ -59,6 +59,11 @@ sleep 5
 make clean PROJ_NUM=2.1.0 DOXY_VER=2.6.2
 make docs PROJ_NUM=2.1.0 DOXY_VER=2.6.2
 echo ""
+echo "Making OVM 2.1.1 Docs"
+sleep 5
+make clean PROJ_NUM=2.1.1 DOXY_VER=2.6.2
+make docs PROJ_NUM=2.1.1 DOXY_VER=2.6.2
+echo ""
 echo "Moving OVM Docs"
 cd -
 mv ../../../OVMdocs/tags/1.8.1/ovm-* upload/.
