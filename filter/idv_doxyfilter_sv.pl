@@ -141,14 +141,17 @@ foreach (@infile) {
    # Skip Comments
    # TODO - this is the same comment routine as in the main section - make in to subroutine
    if (!$blockcomment) {
-      if (s/\/\/(.*)\\/\/\/\\/) {
-         $inline_comment = $1;
-      }
-      elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
+      if (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
+         #print(STDERR $infile_line.": inline block comment \"".$inline_block_comment."\"\n");
       }
-      elsif (s/\/\/(.*)/\/\//) {
+      if (s/\/\/(.*)\\/\/\/\\/) {  # Comment in a macro - leave the line escape
          $inline_comment = $1;
+         #print(STDERR $infile_line.": inline macro comment \"".$inline_comment."\"\n");
+      }
+      elsif (s/\/\/(.*)/\/\//) { # strip comment; leave the marker
+         $inline_comment = $1;
+         #print(STDERR $infile_line.": inline comment \"".$inline_comment."\"\n");
       }
    }
 
@@ -241,14 +244,17 @@ foreach (@infile) {
    #           so we'll put back the comment at the end
    #   - And - comments in macro - leave the line escape
    if (!$blockcomment) {
-      if (s/\/\/(.*)\\/\/\/\\/) {
-         $inline_comment = $1;
-      }
-      elsif (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
+      if (s/\/\*(.*)\*\//\/\*\*\//) { # strip comment off of the line; leave the marker
          $inline_block_comment = $1;
+         #print(STDERR $infile_line.": inline block comment \"".$inline_block_comment."\"\n");
       }
-      elsif (s/\/\/(.*)/\/\//) {
+      if (s/\/\/(.*)\\/\/\/\\/) {  # Comment in a macro - leave the line escape
          $inline_comment = $1;
+         #print(STDERR $infile_line.": inline macro comment \"".$inline_comment."\"\n");
+      }
+      elsif (s/\/\/(.*)/\/\//) { # strip comment; leave the marker
+         $inline_comment = $1;
+         #print(STDERR $infile_line.": inline comment \"".$inline_comment."\"\n");
       }
 
    }
@@ -919,7 +925,7 @@ foreach (@infile) {
    if ($function_start == 1) {
       # put in the parens if they're missing
       if (!/\)\s*;/) {
-         s/;/();/
+         s/;/();/;
       }
       if ($ispure) {
          if(s/;\s*$/ = 0;\n/) {
