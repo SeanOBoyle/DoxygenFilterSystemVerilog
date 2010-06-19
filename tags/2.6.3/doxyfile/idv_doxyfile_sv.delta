@@ -1,0 +1,76 @@
+# $Id$
+#-----------------------------------------------------------------------------
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#-----------------------------------------------------------------------------
+# Title:        Doxygen Doxyfile Delta File for SystemVerilog
+# Description:  This doxyfile delta defines the delta's from the base template
+#               to use doxygen with the IDV SystemVerilog filter.
+#               Use with the idv_doxyfile_tmplconv.pl script.
+#
+# Original Author: Sean O'Boyle
+# Contact:         seanoboyle@intelligentdv.com)
+# Company:         Intelligent Design Verification
+# Company URL:     http://intelligentdv.com
+#
+# Download the most recent version here:
+#                  http://intelligentdv.com/downloads
+#
+# File Bugs Here:  http://bugs.intelligentdv.com
+#        Project:  DoxygenFilterSV
+#
+# File: idv_doxyfile_sv.delta
+# $LastChangedBy$
+# $LastChangedDate$
+# $LastChangedRevision$
+#
+#-----------------------------------------------------------------------------
+FILE_PATTERNS          = *.svh *.sv *.cpp *.c *.h
+EXAMPLE_PATTERNS       = *.sv, *.svh
+EXTENSION_MAPPING      = sv=C++ svh=C++
+FILTER_PATTERNS        = *.sv=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl *.svh=<PATH_DOXYSCR>/filter/idv_doxyfilter_sv.pl
+LAYOUT_FILE            = <PATH_DOXYSCR>/doxyfile/idv_doxylayout.xml
+CASE_SENSE_NAMES       = YES
+JAVADOC_AUTOBRIEF      = YES
+TAB_SIZE               = 3
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = <PATH_HOME>/idv/subversion
+STRIP_CODE_COMMENTS    = NO
+INLINE_INFO            = NO
+SHOW_DIRECTORIES       = YES
+WARN_NO_PARAMDOC       = YES
+WARN_FORMAT            = "$file:$line: $text "
+RECURSIVE              = YES
+EXCLUDE_SYMLINKS       = YES
+SOURCE_BROWSER         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+ALPHABETICAL_INDEX     = YES
+HTML_DYNAMIC_SECTIONS  = YES
+HTML_TIMESTAMP         = YES
+GENERATE_LATEX         = NO
+PDF_HYPERLINKS         = NO
+USE_PDFLATEX           = NO
+MACRO_EXPANSION        = YES
+HAVE_DOT               = YES
+TEMPLATE_RELATIONS     = YES
+DOT_GRAPH_MAX_NODES    = 1024
+DOT_TRANSPARENT        = NO
+DOT_MULTI_TARGETS      = YES
+SEARCHENGINE           = YES
+SERVER_BASED_SEARCH    = YES
+
